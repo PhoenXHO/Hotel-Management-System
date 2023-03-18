@@ -16,8 +16,9 @@ A basic starting point of our C mini project.
   - [ ] Ability to approve/reject reservation demands
   - [ ] Access to client/account database
   
-  <!--
- ## Alternative ideas I came up with later on
- - Project Management System  
- ...
- -->
+<details>
+  <summary><h3>Alternative ideas I came up with later on</h3></summary>
+  
+  - Project Management System  
+  ...
+</details>
