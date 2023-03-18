@@ -17,8 +17,9 @@ A basic starting point of our C mini project.
   - [ ] Access to client/account database
   
 <details>
-  <summary><h3>Alternative ideas I came up with later on</h3></summary>
+  <summary><h3>Alternative ideas we came up</h3></summary>
   
+  - InDrive-like app
   - Project Management System  
   ...
 </details>
