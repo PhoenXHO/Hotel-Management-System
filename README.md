@@ -18,5 +18,5 @@ A basic starting point of our C mini project.
   
   
  ## Alternative ideas I came up with later on
- - Project Management System
+ - Project Management System  
  ...
