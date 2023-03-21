@@ -16,6 +16,7 @@ A basic starting point for our C mini project.
   - [ ] Ability to check/list and manage clients
   - [ ] Ability to approve/reject reservation demands
   - [ ] Access to client/account database
+  - [ ] Ability to add/remove rooms
   
 <details>
   <summary><h3>Alternative ideas we came up with</h3></summary>
