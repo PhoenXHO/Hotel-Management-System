@@ -1,5 +1,5 @@
 # Hotel-Management-System
-A basic starting point of our C mini project.
+A basic starting point for our C mini project.
 
 ## Features
 - [ ] Localization (French and English)
