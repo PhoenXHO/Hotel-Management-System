@@ -4,6 +4,7 @@ A basic starting point of our C mini project.
 ## Features
 - [ ] Localization (French and English)
 - [ ] Login Page
+  - [ ] Email verification
   - [ ] Password encryption and security
 - [ ] Client Interface
   - [ ] Ability to allocate a room
