@@ -1,4 +1,4 @@
-# Hotel-Management-System
+# PersonalHub
 A basic starting point for our C mini project.
 
 ## Features
@@ -6,24 +6,25 @@ A basic starting point for our C mini project.
 - [ ] Login Page
   - [ ] Email verification
   - [ ] Password encryption and security
-- [ ] Client Interface
-  - [ ] Ability to allocate a room
-  - [ ] Ability to allocate multiple rooms
-  - [ ] Ability to get availability list
-  - [ ] Ability to get room features/defails
-  - [ ] Ability to cancel a reservation demand
-- [ ] Admin Interface
-  - [ ] Ability to check/list and manage clients
-  - [ ] Ability to approve/reject reservation demands
-  - [ ] Access to client/account database
-  - [ ] Ability to add/remove rooms
-  
-<details>
-  <summary><h3>Alternative ideas we came up with</h3></summary>
-  
-  - InDrive-like app
-  - ~~Text editor~~
-  - Calendar
-  - Project Management System  
-  ...
-</details>
+- [ ] Multiple pre-made templates to choose from
+- [ ] Goal planner template
+  - [ ] Tasks and to-do lists
+  - [ ] List of current projects and future ideas
+  - [ ] Project progress
+  - [ ] Resource library
+  - [ ] Notepad
+  - [ ] Password vault
+- [ ] Student Template
+  - [ ] Calendar
+  - [ ] Notepad
+  - [ ] Resource library
+  - [ ] Weekly schedule
+  - [ ] Assignments
+  - [ ] Password vault
+- [ ] Finance Template
+  - [ ] Expense tracker
+  - [ ] List of bills (paid and overdue)
+  - [ ] Monthly budgets
+  - [ ] Savings goals
+  - [ ] Notepad
+  - [ ] Password vault
