@@ -12,19 +12,15 @@ A basic starting point for our C mini project.
   - [ ] List of current projects and future ideas
   - [ ] Project progress
   - [ ] Resource library
-  - [ ] Notepad
-  - [ ] Password vault
 - [ ] Student Template
   - [ ] Calendar
-  - [ ] Notepad
   - [ ] Resource library
   - [ ] Weekly schedule
   - [ ] Assignments
-  - [ ] Password vault
 - [ ] Finance Template
   - [ ] Expense tracker
   - [ ] List of bills (paid and overdue)
   - [ ] Monthly budgets
   - [ ] Savings goals
-  - [ ] Notepad
-  - [ ] Password vault
+- [ ] Notepad
+- [ ] Password vault
