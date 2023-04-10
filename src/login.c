@@ -217,7 +217,8 @@ void get_user_input(void)
                             // Move the cursor back one character
                             x--;
                             // Remove last (duplicate) character from the window
-                            mvwaddch(field->win, 1, field->length, ' ');
+                            if (field->length <= max_size)
+                                mvwaddch(field->win, 1, field->length, ' ');
                         }
 
                         // Move the string from position (x) one character to the left
