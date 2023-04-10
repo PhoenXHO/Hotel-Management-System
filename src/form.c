@@ -110,8 +110,8 @@ static void init_fields(FIELD *** fields, short n_fields)
     for (int i = 0; i < n_fields; i++)
     {
         (*fields)[i] = (FIELD *)malloc(sizeof(FIELD));
-        (*fields)[i]->capacity = 120;
-        (*fields)[i]->length = (*fields)[i]->cur_pos = 0;
+        (*fields)[i]->capacity = 4;
+        (*fields)[i]->length = 0;
         (*fields)[i]->buffer = (char *)malloc((*fields)[i]->capacity * sizeof(char));
         (*fields)[i]->buffer[0] = '\0';
     }

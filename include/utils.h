@@ -6,7 +6,7 @@
 
 // Utility macros
 #define GROW_CAPACITY(cap) \
-    (cap) * 1.5
+    (cap) * 2
 #define GROW_ARRAY(type, arr, cap) \
     (type *)reallocate(arr, GROW_CAPACITY(cap) * sizeof(type))
 

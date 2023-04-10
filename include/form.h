@@ -12,7 +12,6 @@ typedef struct
 {
     short rows; // Size in rows
     short cols; // Size in cols
-    int cur_pos; // Cursor position relative to the buffer
     char * buffer; // Text buffer
     int length; // Buffer length (without '\0')
     int capacity; // Buffer capacity
