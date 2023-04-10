@@ -6,6 +6,10 @@ A basic starting point for our C mini project.
 - [ ] Login Page
   - [ ] Email verification
   - [ ] Password encryption and security
+
+![image](https://user-images.githubusercontent.com/20407722/230931538-7a61dda9-dbb8-4a32-b105-031314983acf.png)
+
+
 - [ ] custom template 
 - [ ] Multiple pre-made templates to choose from
 - [ ] Goal planner template
