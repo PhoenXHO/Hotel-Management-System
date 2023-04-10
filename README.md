@@ -6,8 +6,6 @@ A basic starting point for our C mini project.
 - [ ] Login Page
   - [ ] Email verification
   - [ ] Password encryption and security
-
-
 - [ ] custom template 
 - [ ] Multiple pre-made templates to choose from
 - [ ] Goal planner template
