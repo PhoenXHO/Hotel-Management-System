@@ -38,9 +38,7 @@ typedef struct
     short n_fields; // Number of fields
     short n_buttons; // Number of buttons
     FIELD ** fields; // Array of form fields
-    FIELD * active_f; // Active field
     BUTTON ** buttons; // Array of buttons
-    BUTTON * active_b; // Active button
     WINDOW * win; // Form window
 } FORM;
 

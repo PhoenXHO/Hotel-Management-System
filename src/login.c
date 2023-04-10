@@ -35,8 +35,8 @@ void get_user_input(void)
 
     // Show the cursor if hidden, then move it to the beginning of the first field
     curs_set(1);
-    wmove(g_form->fields[i]->win, x, 1);
-    wrefresh(g_form->fields[i]->win);
+    wmove(g_form->fields[0]->win, 1, 1);
+    wrefresh(g_form->fields[0]->win);
 
     // Utility macros
     #define UP_CHECK(n, boolval) \
@@ -83,10 +83,15 @@ void get_user_input(void)
                 destroy_form(g_form);
                 // Create a new one accordingly
                 g_form = is_login ? create_registrform() : create_loginform();
-                // Highlight the first text field and the cursor to the beginning
-                in_fields = true; i = 0; x = 1;
+                // Highlight the first text field and set the cursor to the beginning
+                in_fields = true; i = 0; x = 1; b_pos = 0;
+                curs_set(1);
+                wmove(g_form->fields[0]->win, 1, 1);
+                wrefresh(g_form->fields[0]->win);
                 // Switch between login and register page
                 is_login = !is_login;
+
+                continue;
             }
         }
 
@@ -226,7 +231,6 @@ void get_user_input(void)
 
         // Print the new string
         mvwprintw(field->win, 1, 1, "%.*s", max_size, (field->hidden ? hide_str(field->length) : &field->buffer[strstart]));
-        wrefresh(field->win);
 
         // For debugging purposes
 //        mvwprintw(stdscr, 1, 1, "x = %d     ", x);

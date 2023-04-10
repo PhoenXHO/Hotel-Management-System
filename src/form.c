@@ -6,6 +6,7 @@ static void init_fields(FIELD ***, short n_fields);
 static void init_buttons(BUTTON ***, short n_buttons);
 static void add_field(FORM *, FIELD *, const char * label, short height, short width, short ypos, bool hidden);
 static void add_button(FORM *, BUTTON *, const char * content, short ypos, short xpos);
+static void free_arr(void **, int n_elem);
 
 // Create a login form
 FORM * create_loginform(void)
@@ -18,7 +19,6 @@ FORM * create_loginform(void)
     FORM * form = new_form(form_height, form_width, starty, startx, 1);
 
     mvwprintw(form->win, 2, (form->cols - 5) / 2, "Login");
-    wrefresh(form->win);
 
     // Allocate memory for two text fields
     form->n_fields = 2;
@@ -40,8 +40,8 @@ FORM * create_loginform(void)
     add_button(form, form->buttons[0], "  Submit  ", 17, padding + 2);
     // Second button (register)
     mvwprintw(form->win, 19, padding - 1, " Don't have an account?");
-    wrefresh(form->win);
     add_button(form, form->buttons[1], "  Register  ", 21, padding + 2);
+    wrefresh(form->win);
 
     return form;
 }
@@ -57,7 +57,6 @@ FORM * create_registrform(void)
     FORM * form = new_form(form_height, form_width, starty, startx, 1);
 
     mvwprintw(form->win, 2, (form->cols - 8) / 2, "Register");
-    wrefresh(form->win);
 
     // Allocate memory for three text fields
     form->n_fields = 3;
@@ -81,8 +80,8 @@ FORM * create_registrform(void)
     add_button(form, form->buttons[0], "  Submit  ", 20, padding + 2);
     // Second button (register)
     mvwprintw(form->win, 22, padding - 1, " Already have an account?");
-    wrefresh(form->win);
     add_button(form, form->buttons[1], "  Login  ", 24, padding + 2);
+    wrefresh(form->win);
 
     return form;
 }
@@ -99,9 +98,7 @@ static FORM * new_form(int height, int width, int starty, int startx, int type)
     form->cols = width;
 
     form->fields = NULL;
-    form->active_f = NULL;
     form->buttons = NULL;
-    form->active_b = NULL;
 
     return form;
 }
@@ -113,7 +110,7 @@ static void init_fields(FIELD *** fields, short n_fields)
     for (int i = 0; i < n_fields; i++)
     {
         (*fields)[i] = (FIELD *)malloc(sizeof(FIELD));
-        (*fields)[i]->capacity = 8;
+        (*fields)[i]->capacity = 120;
         (*fields)[i]->length = (*fields)[i]->cur_pos = 0;
         (*fields)[i]->buffer = (char *)malloc((*fields)[i]->capacity * sizeof(char));
         (*fields)[i]->buffer[0] = '\0';
@@ -133,7 +130,6 @@ static void add_field(FORM * form, FIELD * field, const char * label, short heig
     field->rows = height;
     field->cols = width;
     mvwprintw(form->win, ypos - 2, (form_width - width) / 2, label);
-    wrefresh(form->win);
     field->win = create_newwin(height, width, ypos, (COLS - width) / 2, 0);
     field->hidden = hidden;
 }
@@ -150,17 +146,26 @@ static void add_button(FORM * form, BUTTON * button, const char * content, short
     wattron(form->win, button->style);
     mvwprintw(form->win, ypos, xpos, button->content);
     wattroff(form->win, button->style);
-
-    wrefresh(form->win);
 }
 
 // Destroy a form
 void destroy_form(FORM * form)
 {
-    destroy_win(form->fields[0]->win);
-    destroy_win(form->fields[1]->win);
+    for (int i = 0; i < form->n_fields; i++)
+    {
+        FIELD * field = form->fields[i];
+        // Destroy the field window
+        destroy_win(field->win);
+        // Free memory allocated for the field buffer
+        free(field->buffer);
+    }
+    // Destroy the form window
     destroy_win(form->win);
-    free(form->fields);
+    // Free memory allocated for fields
+    free_arr(form->fields, form->n_fields);
+    // Free memory allocated for buttons
+    free_arr(form->buttons, form->n_buttons);
+    // Free memory allocated for the form
     free(form);
 }
 
@@ -194,4 +199,12 @@ void highlight_b(FORM * form, short index)
 void reset_buttons(FORM * form)
 {
     highlight_b(form, -1);
+}
+
+// Free memory allocated for a list of elements
+static void free_arr(void ** arr, int n_elem)
+{
+    for (int i = 0; i < n_elem; i++)
+        free(arr[i]);
+    free(arr);
 }
