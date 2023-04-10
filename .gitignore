@@ -53,3 +53,7 @@ dkms.conf
 
 # VSCode
 .vscode/
+
+# Code::Blocks
+*.layout
+*.depend
