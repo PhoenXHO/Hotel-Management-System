@@ -30,8 +30,21 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="include" />
 		</Compiler>
+		<Unit filename="include/form.h" />
+		<Unit filename="include/login.h" />
+		<Unit filename="include/utils.h" />
 		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/form.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/login.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/utils.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
