@@ -31,7 +31,7 @@ void get_user_input(void)
         strstart = 0; // Index of the beginning of the string to print
     bool in_fields = true; // A flag to check if a field is selected
     bool is_login = true; // A flag to check if the user is trying to login or register
-    short max_size = g_form->fields[i]->cols - 3; // Max size of the string to print
+    const short max_size = g_form->fields[i]->cols - 3; // Max size of the string to print
 
     // Show the cursor if hidden, then move it to the beginning of the first field
     curs_set(1);
@@ -40,32 +40,24 @@ void get_user_input(void)
 
     // Utility macros
     #define UP_CHECK(n, boolval) \
-        do { \
-            if (i > 0) \
-                i--; \
-            else \
-            { \
-                reset_buttons(g_form); \
-                i = n - 1; \
-                in_fields = boolval; \
-            } \
-        } while (false)  /* This "loop" is a hack used to avoid getting an error
-                            when using this macro, because macros have to be
-                            followed by a semi-colon. */
+        if (i > 0) \
+            i--; \
+        else \
+        { \
+            reset_buttons(g_form); \
+            i = n - 1; \
+            in_fields = boolval; \
+        }
 
     #define DOWN_CHECK(n, boolval) \
-        do { \
-            if (i < n - 1) \
-                i++; \
-            else if (i == n - 1) \
-            { \
-                reset_buttons(g_form); \
-                i = 0; \
-                in_fields = boolval; \
-            } \
-            else \
-                i = 0; \
-        } while (false)
+        if (i < n - 1) \
+            i++; \
+        else if (i == n - 1) \
+        { \
+            reset_buttons(g_form); \
+            i = 0; \
+            in_fields = boolval; \
+        }
 
     // Keep scanning characters (and keys) from the user until a new line is encountered
     while (true)
@@ -104,10 +96,7 @@ void get_user_input(void)
                     // Order of these 'if' statements matter A LOT
                     //      I learned that the hard way... *sigh*
                     if (field->length > max_size - 1 && x == 1 && strstart > 0)
-                    {
                         strstart--;
-                        mvwprintw(field->win, 1, 1, "%.*s", max_size, &field->buffer[strstart]);
-                    }
                     if (x > 1)
                         x--;
                     if (b_pos > 0)
@@ -119,10 +108,7 @@ void get_user_input(void)
                 {
                     // Order...
                     if (field->length > max_size - 1 && x == max_size + 1 && b_pos < field->length)
-                    {
                         strstart++;
-                        mvwprintw(field->win, 1, 1, "%.*s", max_size, &field->buffer[strstart]);
-                    }
                     if (x < field->length + 1 && x <= max_size)
                         x++;
                     if (b_pos < field->length)
@@ -133,31 +119,29 @@ void get_user_input(void)
                 if (in_fields)
                 {
                     UP_CHECK(g_form->n_buttons, false);
-                    field = g_form->fields[i];
                 }
                 else
                 {
                     UP_CHECK(g_form->n_fields, true);
-                    field = g_form->fields[i];
                 }
-                x = (field->length + 1) > max_size ? max_size + 1 : field->length + 1;
+                field = g_form->fields[i];
+                x = ((field->length + 1) > max_size) ? (max_size + 1) : (field->length + 1);
                 b_pos = field->length;
-                strstart = field->length > (max_size + 1) ? field->length - max_size : 0;
+                strstart = ((field->length + 1) > (max_size)) ? (field->length - max_size) : 0;
                 break;
             case KEY_DOWN: case '\t': // Down key or Tab key
                 if (in_fields)
                 {
                     DOWN_CHECK(g_form->n_fields, false);
-                    field = g_form->fields[i];
                 }
                 else
                 {
                     DOWN_CHECK(g_form->n_buttons, true);
-                    field = g_form->fields[i];
                 }
-                x = (field->length + 1) > max_size ? max_size + 1 : field->length + 1;
+                field = g_form->fields[i];
+                x = ((field->length + 1) > max_size) ? (max_size + 1) : (field->length + 1);
                 b_pos = field->length;
-                strstart = field->length > (max_size + 1) ? field->length - max_size : 0;
+                strstart = (field->length > (max_size + 1)) ? (field->length - max_size) : 0;
                 break;
             // Ignore the following keys
             case KEY_IC: // Insert key
@@ -230,18 +214,10 @@ void get_user_input(void)
                 }
         }
 
-        // Print the new string
-        mvwprintw(field->win, 1, 1, "%.*s", max_size, (field->hidden ? hide_str(field->length) : &field->buffer[strstart]));
-
-        // For debugging purposes
-//        mvwprintw(stdscr, 1, 1, "x = %d     ", x);
-//        mvwprintw(stdscr, 2, 1, "b_pos = %d    ", b_pos);
-//        mvwprintw(stdscr, 3, 1, "strstart = %d     ", strstart);
-//        mvwprintw(stdscr, 4, 1, "length = %d       ", field->length);
-//        wrefresh(stdscr);
-
         if (in_fields)
         {
+            // Print the new string
+            mvwprintw(field->win, 1, 1, "%.*s", max_size, (field->hidden ? hide_str(field->length) : &field->buffer[strstart]));
             // Show cursor, then move it to the corresponding input field
             curs_set(1);
             wmove(field->win, 1, x);

@@ -9,7 +9,6 @@ int main()
     initscr();
     noecho();
     keypad(stdscr, TRUE);
-    cbreak();
 
     /* INITIATE LOGIN INTERFACE */
     init_login();
