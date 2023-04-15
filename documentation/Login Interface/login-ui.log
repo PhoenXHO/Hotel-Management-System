@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.12) (preloaded format=pdflatex 2022.12.28)  14 APR 2023 23:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.12) (preloaded format=pdflatex 2022.12.28)  15 APR 2023 16:57
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -596,7 +596,7 @@ consecutive:
 consecutive:
 ) (../../src/login.c
 consecutive:
-) [5] (../../include/form.h
+[5]) (../../include/form.h
 consecutive:
 ) (../../src/form.c
 consecutive:
@@ -605,13 +605,13 @@ consecutive:
 ) [6] (../../src/form.c
 consecutive:
 )
-Overfull \hbox (13.7934pt too wide) in paragraph at lines 254--255
+Overfull \hbox (13.7934pt too wide) in paragraph at lines 252--259
 []\OT1/cmr/m/n/12 Next, we add those fields and but-tons to the form win-dow us
 -ing the two func-tions [][][][][][]
  []
 
 
-Overfull \hbox (6.18071pt too wide) in paragraph at lines 254--255
+Overfull \hbox (6.18071pt too wide) in paragraph at lines 252--259
 \OT1/cmr/m/n/12 and [][][][][][] with their re-spec-tive la-bels. We print the 
 text [][][][][][]
  []
@@ -654,9 +654,15 @@ consecutive:
 consecutive:
 ) (../../src/login.c
 consecutive:
-) [12] [13]
+) [12]
+Overfull \hbox (12.72173pt too wide) in paragraph at lines 594--596
+\OT1/cmr/m/n/12 Why didn't I use [][][][][][], you ask? Well, gen-er-ally, [][]
+[][][][] is much faster than [][][][][][].
+ []
+
+[13]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 628.
+(Font)              <9> on input line 616.
  (../../src/login.c
 consecutive:
 ) (../../src/login.c
@@ -669,19 +675,25 @@ consecutive:
 consecutive:
 ) (../../src/login.c
 consecutive:
-) [16] (../../src/login.c
+) [16]
+Overfull \hbox (2.50073pt too wide) in paragraph at lines 834--835
+\OT1/cmr/m/n/12 That is ba-si-cally [][][][][][]. Be-cause [][][][][][]---just 
+like [][][][][][]---
+ []
+
+(../../src/login.c
 consecutive:
 ) [17] (../../src/login.c
 consecutive:
 ) (../../src/login.c
 consecutive:
 ) [18]
-Overfull \hbox (9.08382pt too wide) in paragraph at lines 956--957
+Overfull \hbox (9.08382pt too wide) in paragraph at lines 947--948
  [][] 
  []
 
 
-Overfull \hbox (1.4872pt too wide) in paragraph at lines 1007--1008
+Overfull \hbox (1.4872pt too wide) in paragraph at lines 998--999
  [][] 
  []
 
@@ -697,13 +709,13 @@ consecutive:
 consecutive:
 [20]) [21] (login-ui.aux) ) 
 Here is how much of TeX's memory you used:
- 16213 strings out of 476406
- 321112 string characters out of 2789566
- 2079787 words of memory out of 3000000
- 36206 multiletter control sequences out of 15000+600000
+ 16215 strings out of 476406
+ 321132 string characters out of 2789566
+ 2082787 words of memory out of 3000000
+ 36208 multiletter control sequences out of 15000+600000
  518473 words of font info for 54 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 100i,11n,104p,815b,1825s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ 100i,11n,104p,918b,1825s stack positions out of 10000i,1000n,20000p,200000b,80000s
 <C:/Users/oussa/AppData/Local/Programs/MiKTeX/fonts/
 type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/oussa/AppData/Local/Programs/MiKT
 eX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Users/oussa/AppData/Local/Prog
@@ -715,7 +727,7 @@ pData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users
 tt10.pfb><C:/Users/oussa/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfo
 nts/cm/cmtt12.pfb><C:/Users/oussa/AppData/Local/Programs/MiKTeX/fonts/type1/pub
 lic/amsfonts/cm/cmtt9.pfb>
-Output written on login-ui.pdf (21 pages, 236559 bytes).
+Output written on login-ui.pdf (21 pages, 237021 bytes).
 PDF statistics:
  118 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
