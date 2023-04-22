@@ -3,9 +3,9 @@ A basic starting point for our C mini project.
 
 ## Features
 - [ ] Localization (French and English)
-- [x] Login Page
-  - [x] Email verification
-  - [x] Password encryption and security
+- [ ] Login Page
+  - [ ] Email verification
+  - [ ] Password encryption and security
 - [ ] custom template 
 - [ ] Multiple pre-made templates to choose from
 - [ ] Goal planner template
