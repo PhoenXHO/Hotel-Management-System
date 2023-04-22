@@ -1,98 +1,16 @@
 #include <stdlib.h>
+#include <string.h>
 #include "form.h"
 
-static FORM * new_form(int height, int width, int starty, int startx, int type);
-static void init_fields(FIELD ***, short n_fields);
-static void init_buttons(BUTTON ***, short n_buttons);
-static void add_field(FORM *, FIELD *, const char * label, short height, short width, short ypos, bool hidden);
-static void add_button(FORM *, BUTTON *, const char * content, short ypos, short xpos);
 static void free_arr(void **, int n_elem);
 
-// Create a login form
-FORM * create_loginform(void)
-{
-    // Center the window
-    int starty = (LINES - form_height) / 2,
-        startx = (COLS - form_width) / 2;
-
-    // Init form
-    FORM * form = new_form(form_height, form_width, starty, startx, 1);
-
-    mvwprintw(form->win, 2, (form->cols - 5) / 2, "Login");
-
-    // Allocate memory for two text fields
-    form->n_fields = 2;
-    init_fields(&form->fields, form->n_fields);
-    // Allocate memory for two buttons
-    form->n_buttons = 2;
-    init_buttons(&form->buttons, form->n_buttons);
-
-    short field_width = form_width - 12;
-    short field_height = 3;
-    short padding = (form_width - field_width) / 2;
-
-    // First field (email)
-    add_field(form, form->fields[0], " - Email Address :", field_height, field_width, 7, false);
-    // Second field (password)
-    add_field(form, form->fields[1], " - Password :", field_height, field_width, 12, true);
-
-    // First button (submit)
-    add_button(form, form->buttons[0], "  Submit  ", 17, padding + 2);
-    // Second button (register)
-    mvwprintw(form->win, 19, padding - 1, " Don't have an account?");
-    add_button(form, form->buttons[1], "  Register  ", 21, padding + 2);
-    wrefresh(form->win);
-
-    return form;
-}
-
-// Create a registration form
-FORM * create_registrform(void)
-{
-    // Center the window
-    int starty = (LINES - form_height) / 2,
-        startx = (COLS - form_width) / 2;
-
-    // Init form
-    FORM * form = new_form(form_height, form_width, starty, startx, 1);
-
-    mvwprintw(form->win, 2, (form->cols - 8) / 2, "Register");
-
-    // Allocate memory for three text fields
-    form->n_fields = 3;
-    init_fields(&form->fields, form->n_fields);
-    // Allocate memory for two buttons
-    form->n_buttons = 2;
-    init_buttons(&form->buttons, form->n_buttons);
-
-    short field_width = form_width - 12;
-    short field_height = 3;
-    short padding = (form_width - field_width) / 2;
-
-    // First field (username)
-    add_field(form, form->fields[0], " - Username :", field_height, field_width, 7, false);
-    // First field (email)
-    add_field(form, form->fields[1], " - Email Address :", field_height, field_width, 12, false);
-    // Second field (password)
-    add_field(form, form->fields[2], " - Password :", field_height, field_width, 17, true);
-
-    // First button (submit)
-    add_button(form, form->buttons[0], "  Submit  ", 20, padding + 2);
-    // Second button (register)
-    mvwprintw(form->win, 22, padding - 1, " Already have an account?");
-    add_button(form, form->buttons[1], "  Login  ", 24, padding + 2);
-    wrefresh(form->win);
-
-    return form;
-}
-
 // Create an initial form
-static FORM * new_form(int height, int width, int starty, int startx, int type)
+FORM * new_form(int height, int width, int starty, int startx, int type, chtype colors)
 {
     // Allocate memory for the form
     FORM * form = (FORM *)malloc(sizeof(FORM));
     // Init form window
-    form->win = create_newwin(height, width, starty, startx, type);
+    form->win = create_newwin(height, width, starty, startx, type, colors);
 
     form->rows = height;
     form->cols = width;
@@ -103,102 +21,59 @@ static FORM * new_form(int height, int width, int starty, int startx, int type)
     return form;
 }
 
-// Initialize fields
-static void init_fields(FIELD *** fields, short n_fields)
-{
-    *fields = (FIELD **)malloc(n_fields * sizeof(FIELD *));
-    for (int i = 0; i < n_fields; i++)
-    {
-        (*fields)[i] = (FIELD *)malloc(sizeof(FIELD));
-        (*fields)[i]->capacity = 4;
-        (*fields)[i]->length = 0;
-        (*fields)[i]->buffer = (char *)malloc((*fields)[i]->capacity * sizeof(char));
-        (*fields)[i]->buffer[0] = '\0';
-    }
-}
-
-// Initialize buttons
-static void init_buttons(BUTTON *** buttons, short n_buttons)
-{
-    *buttons = (BUTTON **)malloc(n_buttons * sizeof(BUTTON *));
-    for (int i = 0; i < n_buttons; i++)
-        (*buttons)[i] = (BUTTON *)malloc(sizeof(BUTTON));
-}
-
-static void add_field(FORM * form, FIELD * field, const char * label, short height, short width, short ypos, bool hidden)
-{
-    field->rows = height;
-    field->cols = width;
-    mvwprintw(form->win, ypos - 2, (form_width - width) / 2, label);
-    field->win = create_newwin(height, width, ypos, (COLS - width) / 2, 0);
-    field->hidden = hidden;
-}
-
-static void add_button(FORM * form, BUTTON * button, const char * content, short ypos, short xpos)
-{
-    button->xpos = xpos;
-    button->ypos = ypos;
-
-    button->content = content;
-    button->style = A_BLINK;
-    button->highlight = A_STANDOUT;
-
-    wattron(form->win, button->style);
-    mvwprintw(form->win, ypos, xpos, button->content);
-    wattroff(form->win, button->style);
-}
-
 // Destroy a form
 void destroy_form(FORM * form)
 {
     for (int i = 0; i < form->n_fields; i++)
     {
         FIELD * field = form->fields[i];
-        // Destroy the field window
+        // Destroy the field window and deallocate designated memory
         destroy_win(field->win);
         // Free memory allocated for the field buffer
-        free(field->buffer);
+        free(field->line->buffer);
     }
-    // Destroy the form window
+    // Destroy the form window and deallocate designated memory
     destroy_win(form->win);
     // Free memory allocated for fields
-    free_arr(form->fields, form->n_fields);
+    free_arr((void **)form->fields, form->n_fields);
     // Free memory allocated for buttons
-    free_arr(form->buttons, form->n_buttons);
+    free_arr((void **)form->buttons, form->n_buttons);
     // Free memory allocated for the form
     free(form);
 }
 
-// Highlight button
-void highlight_b(FORM * form, short index)
+// Print errors
+void printerr(FORM * form)
 {
-    for (int i = 0; i < form->n_buttons; i++)
+    attron(COLOR_PAIR(RED));
+    for (int i = 0; i < form->n_fields; i++)
     {
-        short xpos = form->buttons[i]->xpos;
-        short ypos = form->buttons[i]->ypos;
-        BUTTON * button = form->buttons[i];
+        FIELD * field = form->fields[i];
 
-        if (i == index)
-        {
-            wattron(form->win, button->highlight);
-            mvwprintw(form->win, ypos, xpos, button->content);
-            wattroff(form->win, button->highlight);
-        }
-        else
-        {
-            wattron(form->win, button->style);
-            mvwprintw(form->win, ypos, xpos, button->content);
-            wattroff(form->win, button->style);
-        }
+        move(field->ypos - 1, field->xpos);
+        if (field->error[0])
+            printw(field->error);
+        refresh();
+    }
+    attroff(COLOR_PAIR(RED));
+}
 
-        wrefresh(form->win);
+// Clear errors
+void clrerr(FORM * form)
+{
+    for (int i = 0; i < form->n_fields; i++)
+    {
+        FIELD * field = form->fields[i];
+        clear_from(field->ypos - 1, field->xpos, field->cols);
+        refresh();
     }
 }
 
-// Remove highlight
-void reset_buttons(FORM * form)
+// Reset error messages
+void reseterr(FORM * form)
 {
-    highlight_b(form, -1);
+    for (int i = 0; i < form->n_fields; i++)
+        form->fields[i]->error = "";
 }
 
 // Free memory allocated for a list of elements

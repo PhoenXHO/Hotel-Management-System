@@ -7,28 +7,6 @@
 #define form_height 27
 #define form_width 54
 
-// Field structure
-typedef struct
-{
-    short rows; // Size in rows
-    short cols; // Size in cols
-    char * buffer; // Text buffer
-    int length; // Buffer length (without '\0')
-    int capacity; // Buffer capacity
-    WINDOW * win; // Field window
-    bool hidden;
-} FIELD;
-
-// Button structure
-typedef struct
-{
-    short xpos; // x position
-    short ypos; // y position
-    const char * content; // Text content
-    chtype style; // Button default style
-    chtype highlight; // Button highlight style
-} BUTTON;
-
 // Form structure
 typedef struct
 {
@@ -41,10 +19,10 @@ typedef struct
     WINDOW * win; // Form window
 } FORM;
 
-FORM * create_loginform(void);
-FORM * create_registrform(void);
+FORM * new_form(int height, int width, int starty, int startx, int type, chtype colors);
 void destroy_form(FORM *);
-void highlight_b(FORM *, short index);
-void reset_buttons(FORM *);
+void printerr(FORM *);
+void clrerr(FORM *);
+void reseterr(FORM *);
 
 #endif // FORM_H_INCLUDED
