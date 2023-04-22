@@ -1,3 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{n}{keypad}\PYG{p}{(}\PYG{n}{stdscr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{TRUE}\PYG{p}{)}
-\end{Verbatim}
