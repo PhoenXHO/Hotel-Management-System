@@ -35,6 +35,8 @@ typedef struct
     char * buffer; // Text buffer
     int length; // Buffer length (without '\0')
     int capacity; // Buffer capacity
+    short curs_pos; // Cursor position relative to the buffer
+    short strstart; // Index of the first character of the string to print
 } LINE;
 
 // Field structure
@@ -101,7 +103,7 @@ void printb(BUTTON *, WINDOW *);
 void change_button_style(BUTTON **, WINDOW *, short n_buttons, short index, chtype style);
 
 // Handle text in a line
-void handle_line(WINDOW *, LINE *, wchar_t, short * curs_pos, int * buff_pos, int * strstart, short max_size);
+void handle_line(WINDOW *, LINE *, wchar_t, short * curs_pos, short max_size);
 
 // Clear a line on the screen
 void clear_from(short ypos, short xpos, short length);

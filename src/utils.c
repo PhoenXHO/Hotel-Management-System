@@ -72,6 +72,8 @@ void init_fields(FIELD *** fields, short n_fields)
         (*fields)[i]->line->length = 0;
         (*fields)[i]->line->buffer = (char *)malloc((*fields)[i]->line->capacity * sizeof(char));
         (*fields)[i]->line->buffer[0] = '\0';
+        (*fields)[i]->line->curs_pos = 0;
+        (*fields)[i]->line->strstart = 0;
         (*fields)[i]->error = "";
     }
 }
@@ -163,8 +165,11 @@ void change_button_style(BUTTON ** buttons, WINDOW * win, short n_buttons, short
 }
 
 // Hanlde line
-void handle_line(WINDOW * win, LINE * line, wchar_t ch, short * curs_pos, int * buff_pos, int * strstart, short max_size)
+void handle_line(WINDOW * win, LINE * line, wchar_t ch, short * curs_pos, short max_size)
 {
+    short * buff_pos = &line->curs_pos;
+    short * strstart = &line->strstart;
+
     if (isprint(ch))
     {
         // Allocate more memory if necessary

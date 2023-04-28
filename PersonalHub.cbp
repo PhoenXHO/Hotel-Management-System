@@ -35,10 +35,10 @@
 		<Unit filename="include/colors.h" />
 		<Unit filename="include/example.h" />
 		<Unit filename="include/form.h" />
+		<Unit filename="include/globals.h" />
 		<Unit filename="include/login.h" />
 		<Unit filename="include/loginhandler.h" />
 		<Unit filename="include/mainpage.h" />
-		<Unit filename="include/mainwindow.h" />
 		<Unit filename="include/sidebar.h" />
 		<Unit filename="include/utils.h" />
 		<Unit filename="main.c">

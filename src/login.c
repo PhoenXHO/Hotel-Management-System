@@ -44,8 +44,6 @@ void get_user_input(void)
     wchar_t ch; // Character to scan
     short x = 1; // Position of the cursor relative to the field
     short i = 0; // Index of the selected field/button
-    int b_pos = 0, // Position of the cursor relative to the buffer
-        strstart = 0; // Index of the beginning of the string to print
     bool in_fields = true; // A flag to check if a field is selected
     const short max_size = g_form->fields[i]->cols - 3; // Max size of the string to print
 
@@ -96,8 +94,12 @@ void get_user_input(void)
             if (result == ACT_CONTINUE)
             {
                 // Highlight the first text field and set the cursor to the beginning
-                reset_b(i);
-                in_fields = true; i = 0; x = 1; b_pos = 0; strstart = 0;
+                if (!in_fields) reset_b(i);
+                in_fields = true;
+                i = 0;
+                x = 1;
+                g_form->fields[0]->line->curs_pos = 0;
+                g_form->fields[0]->line->strstart = 0;
                 curs_set(1);
                 wmove(g_form->fields[0]->win, 1, 1);
                 wrefresh(g_form->fields[0]->win);
@@ -116,24 +118,24 @@ void get_user_input(void)
                 {
                     // Order of these 'if' statements matter A LOT
                     //      I learned that the hard way... *sigh*
-                    if (line->length > max_size - 1 && x == 1 && strstart > 0)
-                        strstart--;
+                    if (line->length > max_size - 1 && x == 1 && line->strstart > 0)
+                        line->strstart--;
                     if (x > 1)
                         x--;
-                    if (b_pos > 0)
-                        b_pos--;
+                    if (line->curs_pos > 0)
+                        line->curs_pos--;
                 }
                 break;
             case KEY_RIGHT: // Right key
                 if (in_fields)
                 {
                     // Order...
-                    if (line->length > max_size - 1 && x == max_size + 1 && b_pos < line->length)
-                        strstart++;
+                    if (line->length > max_size - 1 && x == max_size + 1 && line->curs_pos < line->length)
+                        line->strstart++;
                     if (x < line->length + 1 && x <= max_size)
                         x++;
-                    if (b_pos < line->length)
-                        b_pos++;
+                    if (line->curs_pos < line->length)
+                        line->curs_pos++;
                 }
                 break;
             case KEY_UP: // Up key
@@ -149,8 +151,8 @@ void get_user_input(void)
                 field = g_form->fields[i];
                 line = field->line;
                 x = ((line->length + 1) > max_size) ? (max_size + 1) : (line->length + 1);
-                b_pos = line->length;
-                strstart = ((line->length + 1) > (max_size)) ? (line->length - max_size) : 0;
+                line->curs_pos = line->length;
+                line->strstart = ((line->length + 1) > (max_size)) ? (line->length - max_size) : 0;
                 break;
             case KEY_DOWN: case '\t': // Down key or Tab key
                 if (in_fields)
@@ -165,8 +167,8 @@ void get_user_input(void)
                 field = g_form->fields[i];
                 line = field->line;
                 x = ((line->length + 1) > max_size) ? (max_size + 1) : (line->length + 1);
-                b_pos = line->length;
-                strstart = (line->length > (max_size + 1)) ? (line->length - max_size) : 0;
+                line->curs_pos = line->length;
+                line->strstart = (line->length > (max_size + 1)) ? (line->length - max_size) : 0;
                 break;
             // Ignore the following keys
             case KEY_IC: // Insert key
@@ -178,22 +180,16 @@ void get_user_input(void)
                 break;
             default:
                 if (in_fields)
-                    handle_line(field->win,
-                                field->line,
-                                ch,
-                                &x,
-                                &b_pos,
-                                &strstart,
-                                max_size);
+                    handle_line(field->win, line, ch, &x, max_size);
         }
 
         if (in_fields)
         {
             // Print the new string
             if (field->hidden)
-                mvwprintw(field->win, 1, 1, "%.*s", max_size, hide_str(field->line->length));
+                mvwprintw(field->win, 1, 1, "%.*s", max_size, hide_str(line->length));
             else
-                mvwprintw(field->win, 1, 1, "%.*s", max_size, &field->line->buffer[strstart]);
+                mvwprintw(field->win, 1, 1, "%.*s", max_size, &line->buffer[line->strstart]);
             // Show cursor, then move it to the corresponding input field
             curs_set(1);
             wmove(field->win, 1, x);
