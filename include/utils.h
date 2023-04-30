@@ -76,6 +76,13 @@ typedef struct
 } dim_box; // Dimension box to store coordinates and sizes
 
 /* UTILITY FUNCTIONS */
+// Clamp a number to a given range
+double clamp(double, double _min, double _max);
+// Clamp and decrement a number
+double dec_clamp(double, double _min);
+// Clamp and increment a number
+double inc_clamp(double, double _max);
+
 // Function to create a new window
 WINDOW * create_newwin(int height, int width, int starty, int startx, int type, chtype colors);
 // Function to destroy a window
@@ -87,15 +94,19 @@ void ref_mvwaddch(WINDOW *, int starty, int startx, wchar_t);
 // Function to reallocate memory for an array
 void * reallocate(void *, size_t new_cap);
 // Allocate memory for n fields
-void init_fields(FIELD ***, short n_fields);
+void init_fields(FIELD ***, int n_fields);
+// Allocate memory for a line
+LINE * create_newline(void);
+// Allocate memory for n lines
+void init_lines(LINE ***, int n_lines);
 // Allocate memory for n buttons
-void init_buttons(BUTTON ***, short n_buttons);
+void init_buttons(BUTTON ***, int n_buttons);
 
 // I know these functions have too many arguments... I can't do anything about it...
 // Add field to the window
 void add_field(WINDOW *, FIELD *, const char * label, dim_box, bool hidden, chtype colors);
 // Add button to the window
-void add_button(WINDOW *, BUTTON *, const char * content, dim_box);
+void add_button(WINDOW *, BUTTON *, const char * content, dim_box, chtype style, chtype highlight);
 
 // Print button
 void printb(BUTTON *, WINDOW *);

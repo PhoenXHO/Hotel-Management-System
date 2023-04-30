@@ -304,12 +304,12 @@ FORM * create_loginform(void)
         .xpos = padding + 2,
         .ypos = first_button_ypos
     };
-    add_button(form->win, form->buttons[0], "Submit", box);
+    add_button(form->win, form->buttons[0], "Submit", box, 0, 0);
     form->buttons[0]->action = &submit;
     // Second button (register)
     mvwprintw(form->win, first_button_ypos + 2, padding - 1, " Don't have an account?");
     box.ypos += 4;
-    add_button(form->win, form->buttons[1], "Register", box);
+    add_button(form->win, form->buttons[1], "Register", box, 0, 0);
     form->buttons[1]->action = &switch_forms;
 
     wrefresh(form->win);
@@ -364,12 +364,12 @@ FORM * create_registrform(void)
         .xpos = padding + 2,
         .ypos = first_button_ypos
     };
-    add_button(form->win, form->buttons[0], "Submit", box);
+    add_button(form->win, form->buttons[0], "Submit", box, 0, 0);
     form->buttons[0]->action = &submit;
     // Second button (register)
     mvwprintw(form->win, first_button_ypos + 2, padding - 1, " Already have an account?");
     box.ypos += 4;
-    add_button(form->win, form->buttons[1], "Login", box);
+    add_button(form->win, form->buttons[1], "Login", box, 0, 0);
     form->buttons[1]->action = &switch_forms;
 
     wrefresh(form->win);

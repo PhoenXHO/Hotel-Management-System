@@ -4,8 +4,6 @@
 
 WINDOW * mainwin;
 
-#define sidebar_width 32
-
 static SIDEBAR * new_sidebar(chtype colors);
 
 // Create a sidebar
@@ -24,7 +22,7 @@ SIDEBAR * create_sidebar(short n_buttons, chtype colors)
 
     // Print title
     mvwprintw(sidebar->win, 2, 8, "Welcome,");
-    mvwprintw(sidebar->win, 3, 18, "%s!", user->username);
+    //mvwprintw(sidebar->win, 3, 18, "%s!", user->username);
     wrefresh(sidebar->win);
 
     return sidebar;
@@ -59,6 +57,7 @@ void handle_sidebar(SIDEBAR * sidebar)
                 wattron(mainwin, COLOR_PAIR(BLUE));
                 box(mainwin, 0, 0);
                 wattroff(mainwin, COLOR_PAIR(BLUE));
+                curs_set(0);
                 wrefresh(mainwin);
                 break;
             case KEY_DOWN:
@@ -106,6 +105,6 @@ static SIDEBAR * new_sidebar(chtype colors)
 // Link an app to a sidebar
 void add_app(SIDEBAR * sidebar, dim_box box, const char * title, short index, event action)
 {
-    add_button(sidebar->win, sidebar->buttons[index], title, box);
+    add_button(sidebar->win, sidebar->buttons[index], title, box, 0, 0);
     sidebar->buttons[index]->action = action;
 }
