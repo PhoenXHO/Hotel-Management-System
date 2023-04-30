@@ -5,7 +5,7 @@
 #include "mainpage.h"
 
 #define WIN_COLS 128
-#define WIN_ROWS 36
+#define WIN_ROWS 50
 
 void init_colors()
 {
@@ -26,7 +26,7 @@ int main()
 
     /* INITIATE LOGIN INTERFACE */
     resize_term(WIN_ROWS, WIN_COLS);
-    init_login();
+    //init_login();
 
     /* INITIALIZE MAIN PAGE */
     curs_set(0);

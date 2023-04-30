@@ -34,14 +34,14 @@ act_result title(void)
         .xpos = -1,
         .ypos = 20
     };
-    add_button(mainwin, buttons[0], "This is a button", box);
+    add_button(mainwin, buttons[0], "This is a button", box, 0, 0);
 
     // Change highlight color of first button
     buttons[0]->highlight = COLOR_PAIR(BLUE_BG_WHITE);
 
     box.width = 24;
     box.ypos = 24;
-    add_button(mainwin, buttons[1], "This is another button", box);
+    add_button(mainwin, buttons[1], "This is another button", box, 0, 0);
 
     // To select buttons
     wchar_t ch;
