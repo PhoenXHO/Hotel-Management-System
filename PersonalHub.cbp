@@ -32,6 +32,7 @@
 			<Add option="-Wall" />
 			<Add directory="include" />
 		</Compiler>
+		<Unit filename="include/calendar.h" />
 		<Unit filename="include/colors.h" />
 		<Unit filename="include/example.h" />
 		<Unit filename="include/form.h" />
@@ -43,6 +44,9 @@
 		<Unit filename="include/sidebar.h" />
 		<Unit filename="include/utils.h" />
 		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/calendar.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/example.c">
