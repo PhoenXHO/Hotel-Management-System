@@ -53,7 +53,7 @@ typedef struct
 } FIELD;
 
 // Button structure
-typedef act_result (* event) (void);
+typedef act_result (* event) ();
 typedef struct
 {
     short xpos; // x position
