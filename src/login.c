@@ -180,7 +180,7 @@ void get_user_input(void)
                 break;
             default:
                 if (in_fields)
-                    handle_line(field->win, line, ch, &x, max_size);
+                    handle_line(field->win, line, ch, &x, max_size, 1);
         }
 
         if (in_fields)
@@ -270,7 +270,7 @@ FORM * create_loginform(void)
         startx = (COLS - form_width) / 2;
 
     // Init form
-    FORM * form = new_form(form_height, form_width, starty, startx, 1, COLOR_PAIR(BLUE));
+    FORM * form = new_form(form_height, form_width, starty, startx, 1, COLOR_PAIR(CYAN));
 
     mvwprintw(form->win, title_ypos, (form->cols - 5) / 2, "Login");
 
@@ -290,12 +290,12 @@ FORM * create_loginform(void)
         .height = field_height,
         .width = field_width,
         .xpos = (COLS - field_width) / 2,
-        .ypos = title_ypos + 7
+        .ypos = title_ypos + starty + 2
     };
-    add_field(form->win, form->fields[0], "Email Address", box, false, COLOR_PAIR(BLUE));
+    add_field(form->win, form->fields[0], "Email Address", box, false, COLOR_PAIR(CYAN));
     // Second field (password)
     box.ypos += 4;
-    add_field(form->win, form->fields[1], "Password", box, true, COLOR_PAIR(BLUE));
+    add_field(form->win, form->fields[1], "Password", box, true, COLOR_PAIR(CYAN));
 
     // First button (submit)
     box = (dim_box){
@@ -304,12 +304,12 @@ FORM * create_loginform(void)
         .xpos = padding + 2,
         .ypos = first_button_ypos
     };
-    add_button(form->win, form->buttons[0], "Submit", box, 0, 0);
+    add_button(form->win, form->buttons[0], "Submit", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
     form->buttons[0]->action = &submit;
     // Second button (register)
     mvwprintw(form->win, first_button_ypos + 2, padding - 1, " Don't have an account?");
     box.ypos += 4;
-    add_button(form->win, form->buttons[1], "Register", box, 0, 0);
+    add_button(form->win, form->buttons[1], "Register", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
     form->buttons[1]->action = &switch_forms;
 
     wrefresh(form->win);
@@ -327,7 +327,7 @@ FORM * create_registrform(void)
         startx = (COLS - form_width) / 2;
 
     // Init form
-    FORM * form = new_form(form_height, form_width, starty, startx, 1, COLOR_PAIR(BLUE));
+    FORM * form = new_form(form_height, form_width, starty, startx, 1, COLOR_PAIR(CYAN));
 
     mvwprintw(form->win, title_ypos, (form->cols - 8) / 2, "Register");
 
@@ -347,15 +347,15 @@ FORM * create_registrform(void)
         .height = field_height,
         .width = field_width,
         .xpos = (COLS - field_width) / 2,
-        .ypos = title_ypos + 7
+        .ypos = title_ypos + starty + 2
     };
-    add_field(form->win, form->fields[0], "Username", box, false, COLOR_PAIR(BLUE));
+    add_field(form->win, form->fields[0], "Username", box, false, COLOR_PAIR(CYAN));
     // First field (email)
     box.ypos += 4;
-    add_field(form->win, form->fields[1], "Email Address", box, false, COLOR_PAIR(BLUE));
+    add_field(form->win, form->fields[1], "Email Address", box, false, COLOR_PAIR(CYAN));
     // Second field (password)
     box.ypos += 4;
-    add_field(form->win, form->fields[2], "Password", box, true, COLOR_PAIR(BLUE));
+    add_field(form->win, form->fields[2], "Password", box, true, COLOR_PAIR(CYAN));
 
     // First button (submit)
     box = (dim_box){
@@ -364,12 +364,12 @@ FORM * create_registrform(void)
         .xpos = padding + 2,
         .ypos = first_button_ypos
     };
-    add_button(form->win, form->buttons[0], "Submit", box, 0, 0);
+    add_button(form->win, form->buttons[0], "Submit", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
     form->buttons[0]->action = &submit;
     // Second button (register)
     mvwprintw(form->win, first_button_ypos + 2, padding - 1, " Already have an account?");
     box.ypos += 4;
-    add_button(form->win, form->buttons[1], "Login", box, 0, 0);
+    add_button(form->win, form->buttons[1], "Login", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
     form->buttons[1]->action = &switch_forms;
 
     wrefresh(form->win);

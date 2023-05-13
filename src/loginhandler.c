@@ -166,6 +166,11 @@ bool validate_form(FORM * form, bool is_login)
             username->error = "Username too long.";
             is_valid = false;
         }
+        else if (username_res == -2)
+        {
+            username->error = "Invalid username.";
+            is_valid = false;
+        }
     }
 
     FIELD * email = form->fields[email_i];
@@ -242,6 +247,9 @@ static int is_valid_pw(char * pw, int length)
 // Check validity of a username
 static int is_valid_username(char * username, int length)
 {
+    if (strchr(username, ' ') != NULL)
+        return -2;
+
     // Invalid username if it is less than USRN_MIN
     if (length < USRN_MIN) return 0;
     // Invalid username if it is longer than USRN_MAX

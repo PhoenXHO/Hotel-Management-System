@@ -5,6 +5,8 @@
 #include <curses.h>
 #include "colors.h"
 
+#define INITIAL_CAP 500
+
 /* UTILITY CONSTANTS */
 #define V_DOUBLE_LINE       186 // Vertical double line
 #define H_DOUBLE_LINE       205 // Horizontal double line
@@ -16,10 +18,14 @@
 /* UTILITY MACROS */
 #define GROW_CAPACITY(cap) \
     (cap) * 2
-#define GROW_ARRAY(type, arr, cap) \
-    (type *)reallocate(arr, GROW_CAPACITY(cap) * sizeof(type))
-#define SHRINK_ARRAY(type, arr, len) \
-    (type *)reallocate(arr, (len) * sizeof(type))
+#define GET_CAPACITY(length) \
+    (INITIAL_CAP * ((length) / INITIAL_CAP + 1))
+#define GROW_ARRAY(type, arr, count) \
+    (type*)reallocate(arr, (count) * sizeof(type))
+#define SHRINK_ARRAY(type, arr, count) \
+    (type*)reallocate(arr, (count) * sizeof(type))
+
+#define CTRL(c) ((c) & 0x1f)
 
 /* UTILITY STRUCTURES */
 // These are values that buttons return when calling their action() function
@@ -83,6 +89,9 @@ double dec_clamp(double, double _min);
 // Clamp and increment a number
 double inc_clamp(double, double _max);
 
+// Free memory allocated for a list of elements
+void free_arr(void **, int n_elem);
+
 // Function to create a new window
 WINDOW * create_newwin(int height, int width, int starty, int startx, int type, chtype colors);
 // Function to destroy a window
@@ -114,10 +123,12 @@ void printb(BUTTON *, WINDOW *);
 void change_button_style(BUTTON **, WINDOW *, short n_buttons, short index, chtype style);
 
 // Handle text in a line
-void handle_line(WINDOW *, LINE *, wchar_t, short * curs_pos, short max_size);
+void handle_line(WINDOW *, LINE *, wchar_t, short * curs_pos, short max_size, short line_pos);
 
 // Clear a line on the screen
 void clear_from(short ypos, short xpos, short length);
+// Clear a line on a specific window
+void wclear_from(WINDOW *, short ypos, short xpos, short length);
 
 // Scan a string dynamically from a stream up to a tab character
 LINE * fscans_tab(FILE *);
