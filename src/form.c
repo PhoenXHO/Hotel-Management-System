@@ -2,8 +2,6 @@
 #include <string.h>
 #include "form.h"
 
-static void free_arr(void **, int n_elem);
-
 // Create an initial form
 FORM * new_form(int height, int width, int starty, int startx, int type, chtype colors)
 {
@@ -74,12 +72,4 @@ void reseterr(FORM * form)
 {
     for (int i = 0; i < form->n_fields; i++)
         form->fields[i]->error = "";
-}
-
-// Free memory allocated for a list of elements
-static void free_arr(void ** arr, int n_elem)
-{
-    for (int i = 0; i < n_elem; i++)
-        free(arr[i]);
-    free(arr);
 }

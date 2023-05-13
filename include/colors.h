@@ -4,6 +4,14 @@
 #define BLUE            1
 #define WHITE           2
 #define RED             3
-#define BLUE_BG_WHITE   4
+#define GREEN           4
+#define CYAN            5
+
+#define WHITE_BG_BLACK  6
+#define BLUE_BG_WHITE   7
+#define RED_BG_WHITE    8
+#define CYAN_BG_WHITE   9
+#define CYAN_BG_BLACK   10
+#define RED_BG_BLUE     11
 
 #endif // COLORS_H_INCLUDED

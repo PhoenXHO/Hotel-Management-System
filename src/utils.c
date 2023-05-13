@@ -2,8 +2,6 @@
 #include <ctype.h>
 #include "utils.h"
 
-#define INITIAL_CAP 120
-
 // Clamp a number to a given range
 double clamp(double x, double _min, double _max)
 {
@@ -198,7 +196,7 @@ void change_button_style(BUTTON ** buttons, WINDOW * win, short n_buttons, short
 }
 
 // Hanlde line
-void handle_line(WINDOW * win, LINE * line, wchar_t ch, short * curs_pos, short max_size)
+void handle_line(WINDOW * win, LINE * line, wchar_t ch, short * curs_pos, short max_size, short line_pos)
 {
     short * buff_pos = &line->curs_pos;
     short * strstart = &line->strstart;
@@ -208,8 +206,8 @@ void handle_line(WINDOW * win, LINE * line, wchar_t ch, short * curs_pos, short 
         // Allocate more memory if necessary
         if (line->length + 1 >= line->capacity)
         {
-            line->buffer = GROW_ARRAY(char, line->buffer, line->capacity);
             line->capacity = GROW_CAPACITY(line->capacity);
+            line->buffer = GROW_ARRAY(char, line->buffer, line->capacity);
         }
 
         if (line->length++ == 0) // If the field is empty
@@ -251,7 +249,7 @@ void handle_line(WINDOW * win, LINE * line, wchar_t ch, short * curs_pos, short 
             (*curs_pos)--;
             // Remove last (duplicate) character from the window
             if (line->length <= max_size)
-                mvwaddch(win, 1, line->length, ' ');
+                mvwaddch(win, line_pos, line->length, ' ');
         }
 
         // Move the string from position (x) one character to the left
@@ -272,6 +270,17 @@ void clear_from(short ypos, short xpos, short length)
     }
 }
 
+// Clear a line of length `length` on a specific window
+void wclear_from(WINDOW * win, short ypos, short xpos, short length)
+{
+    for (int i = 0; i < length; i++, xpos++)
+    {
+        wmove(win, ypos, xpos);
+        wprintw(win, " ");
+        wrefresh(win);
+    }
+}
+
 // Scan a string dynamically from a stream up to a tab character
 LINE * fscans_tab(FILE * file)
 {
@@ -288,8 +297,8 @@ LINE * fscans_tab(FILE * file)
     {
         if (string->length + 1 >= string->capacity)
         {
-            string->buffer = GROW_ARRAY(char, string->buffer, string->capacity);
             string->capacity = GROW_CAPACITY(string->capacity);
+            string->buffer = GROW_ARRAY(char, string->buffer, string->capacity);
         }
 
         string->buffer[string->length++] = c;
@@ -302,4 +311,12 @@ LINE * fscans_tab(FILE * file)
     string->buffer = SHRINK_ARRAY(char, string->buffer, string->capacity);
 
     return string;
+}
+
+// Free memory allocated for a list of elements
+void free_arr(void ** arr, int n_elem)
+{
+    for (int i = 0; i < n_elem; i++)
+        free(arr[i]);
+    free(arr);
 }

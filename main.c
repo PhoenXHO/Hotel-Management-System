@@ -5,14 +5,22 @@
 #include "mainpage.h"
 
 #define WIN_COLS 128
-#define WIN_ROWS 50
+#define WIN_ROWS 42
 
 void init_colors()
 {
     init_pair(BLUE, COLOR_BLUE, COLOR_BLACK);
     init_pair(WHITE, COLOR_WHITE, COLOR_BLACK);
     init_pair(RED, COLOR_RED, COLOR_BLACK);
+    init_pair(GREEN, COLOR_GREEN, COLOR_BLACK);
+    init_pair(CYAN, COLOR_CYAN, COLOR_BLACK);
+
+    init_pair(WHITE_BG_BLACK, COLOR_BLACK, COLOR_WHITE);
     init_pair(BLUE_BG_WHITE, COLOR_WHITE, COLOR_BLUE);
+    init_pair(RED_BG_WHITE, COLOR_WHITE, COLOR_RED);
+    init_pair(CYAN_BG_WHITE, COLOR_WHITE, COLOR_CYAN);
+    init_pair(CYAN_BG_BLACK, COLOR_BLACK, COLOR_CYAN);
+    init_pair(RED_BG_BLUE, COLOR_BLUE, COLOR_RED);
 }
 
 int main()

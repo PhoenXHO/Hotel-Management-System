@@ -7,8 +7,10 @@ typedef struct
 {
     LINE ** lines; // List of lines
     int n_lines; // Number of lines
+    int strstart;
+    int linestart;
 } TEXTAREA;
 
-act_result textarea(void);
+act_result notepad(void);
 
 #endif // NOTEPAD_H_INCLUDED

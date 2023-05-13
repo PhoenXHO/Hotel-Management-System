@@ -17,7 +17,7 @@ SIDEBAR * create_sidebar(short n_buttons, chtype colors)
     sidebar->buttons = NULL;
 
     // Allocate memory for this number of buttons
-    sidebar->n_buttons = 4;
+    sidebar->n_buttons = n_buttons;
     init_buttons(&sidebar->buttons, sidebar->n_buttons);
 
     // Print title
@@ -54,9 +54,9 @@ void handle_sidebar(SIDEBAR * sidebar)
             case '\n':
                 sidebar->buttons[i]->action();
                 werase(mainwin);
-                wattron(mainwin, COLOR_PAIR(BLUE));
+                wattron(mainwin, COLOR_PAIR(CYAN));
                 box(mainwin, 0, 0);
-                wattroff(mainwin, COLOR_PAIR(BLUE));
+                wattroff(mainwin, COLOR_PAIR(CYAN));
                 curs_set(0);
                 wrefresh(mainwin);
                 break;
@@ -105,6 +105,6 @@ static SIDEBAR * new_sidebar(chtype colors)
 // Link an app to a sidebar
 void add_app(SIDEBAR * sidebar, dim_box box, const char * title, short index, event action)
 {
-    add_button(sidebar->win, sidebar->buttons[index], title, box, 0, 0);
+    add_button(sidebar->win, sidebar->buttons[index], title, box, COLOR_PAIR(WHITE_BG_BLACK), COLOR_PAIR(CYAN_BG_BLACK));
     sidebar->buttons[index]->action = action;
 }

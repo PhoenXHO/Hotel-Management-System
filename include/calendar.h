@@ -5,15 +5,16 @@
 
 typedef struct
 {
-    int day;
-    int month;
-    int year;
+    short day;
+    short month;
+    short year;
 } DATE;
 
 typedef struct
 {
     BUTTON ** buttons;
     short n_buttons;
+    WINDOW * dayswin;
 } CALENDAR;
 
 act_result calendar(void);
