@@ -8,4 +8,3 @@ A basic starting point for our C mini project.
 - [ ] Tasks and to-do lists
 - [x] Calendar
 - [ ] Notepad
-- [ ] Password vault
