@@ -1,7 +1,6 @@
 #ifndef FORM_H_INCLUDED
 #define FORM_H_INCLUDED
 
-#include <stdbool.h>
 #include "utils.h"
 
 #define form_height 27
@@ -21,7 +20,10 @@ typedef struct
 
 FORM * new_form(int height, int width, int starty, int startx, int type, chtype colors);
 void destroy_form(FORM *);
+
+void fld_printerr(FIELD *);
 void printerr(FORM *);
+void fld_clrerr(FIELD *);
 void clrerr(FORM *);
 void reseterr(FORM *);
 

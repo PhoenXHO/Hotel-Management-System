@@ -5,18 +5,13 @@
 
 typedef struct
 {
-    short day;
-    short month;
-    short year;
-} DATE;
-
-typedef struct
-{
     BUTTON ** buttons;
     short n_buttons;
     WINDOW * dayswin;
 } CALENDAR;
 
-act_result calendar(void);
+DATE get_from_calendar(void);
+act_result standalone_calendar(void);
+DATE calendar(bool selecting);
 
 #endif // CALENDAR_H_INCLUDED

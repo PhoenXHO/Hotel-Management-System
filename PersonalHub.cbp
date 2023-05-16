@@ -40,8 +40,10 @@
 		<Unit filename="include/login.h" />
 		<Unit filename="include/loginhandler.h" />
 		<Unit filename="include/mainpage.h" />
+		<Unit filename="include/menu.h" />
 		<Unit filename="include/notepad.h" />
 		<Unit filename="include/sidebar.h" />
+		<Unit filename="include/todo.h" />
 		<Unit filename="include/utils.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
@@ -64,10 +66,16 @@
 		<Unit filename="src/mainpage.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="src/menu.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/notepad.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/sidebar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/todo.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/utils.c">

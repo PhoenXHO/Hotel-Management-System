@@ -51,8 +51,19 @@ void printerr(FORM * form)
         move(field->ypos - 1, field->xpos);
         if (field->error[0])
             printw(field->error);
-        refresh();
     }
+    attroff(COLOR_PAIR(RED));
+    refresh();
+}
+
+// Prints error above a field
+void fld_printerr(FIELD * field)
+{
+    attron(COLOR_PAIR(RED));
+    move(field->ypos - 1, field->xpos);
+    if (field->error[0])
+        printw(field->error);
+    refresh();
     attroff(COLOR_PAIR(RED));
 }
 
@@ -63,8 +74,15 @@ void clrerr(FORM * form)
     {
         FIELD * field = form->fields[i];
         clear_from(field->ypos - 1, field->xpos, field->cols);
-        refresh();
     }
+    refresh();
+}
+
+// Clear an error above a field
+void fld_clrerr(FIELD * field)
+{
+    clear_from(field->ypos - 1, field->xpos, field->cols);
+    refresh();
 }
 
 // Reset error messages

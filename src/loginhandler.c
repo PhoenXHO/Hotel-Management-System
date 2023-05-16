@@ -11,7 +11,7 @@ static int is_valid_username(char *, int length);
 
 static char * encrypt_pw(char *, int length);
 
-static USER * init_user_data(int username_len, int email_len, int pw_len);
+static void init_user_data(int username_len, int email_len, int pw_len);
 
 USER * user;
 
@@ -27,11 +27,7 @@ bool login_user(FORM * form)
 
     // Open database file
     FILE * db = fopen("user_info.txt", "r");
-    if (!db)
-    {
-        fprintf(stderr, "error: could not open file 'user_info.txt'\n");
-        exit(EXIT_FAILURE);
-    }
+    fassert(db, "user_info.txt");
 
     fseek(db, 0, SEEK_END);
     size_t file_size = ftell(db);
@@ -42,7 +38,7 @@ bool login_user(FORM * form)
     // Stop if at the end of the file
     //      or if both the email and the password were found
     LINE * stored_username;
-    while (cur_pos != file_size && !(found_email && found_pw))
+    while (cur_pos != file_size && !(found_email || found_pw))
     {
         stored_username = fscans_tab(db);
         char * stored_email = fscans_tab(db)->buffer;
@@ -58,7 +54,7 @@ bool login_user(FORM * form)
 
     if (!found_email)
         form->fields[0]->error = "Incorrect email.";
-    if (!found_pw)
+    if (found_email && !found_pw)
         form->fields[1]->error = "Incorrect password.";
 
     if (!found_email || !found_pw)
@@ -68,10 +64,11 @@ bool login_user(FORM * form)
     }
 
     // Store the user data
-    user = init_user_data(stored_username->length, email->length, pw->length);
+    init_user_data(stored_username->length, email->length, pw->length);
     strcpy(user->username, stored_username->buffer);
     strcpy(user->email, email->buffer);
     strcpy(user->enc_pw, encrypted_pw);
+    user->new_account = false;
 
     return true;
 }
@@ -87,12 +84,7 @@ bool register_user(FORM * form)
 
     // Open database file
     FILE * db = fopen("user_info.txt", "a+");
-
-    if (!db)
-    {
-        fprintf(stderr, "error: could not open file 'user_info.txt'\n");
-        exit(EXIT_FAILURE);
-    }
+    fassert(db, "user_info.txt");
 
     fseek(db, 0, SEEK_END);
     size_t file_size = ftell(db);
@@ -135,10 +127,11 @@ bool register_user(FORM * form)
     fprintf(db, "%s\t%s\t%s\n", username->buffer, email->buffer, encrypted_pw);
 
     // Store the user data
-    user = init_user_data(username->length, email->length, pw->length);
+    init_user_data(username->length, email->length, pw->length);
     strcpy(user->username, username->buffer);
     strcpy(user->email, email->buffer);
     strcpy(user->enc_pw, encrypted_pw);
+    user->new_account = true;
 
     fclose(db);
     return true;
@@ -158,12 +151,12 @@ bool validate_form(FORM * form, bool is_login)
         int username_res = is_valid_username(username->line->buffer, length);
         if (username_res == 0)
         {
-            username->error = "Username too short.";
+            username->error = "Username too short. (min. " XSTR(USRN_MIN) ")";
             is_valid = false;
         }
         else if (username_res == -1)
         {
-            username->error = "Username too long.";
+            username->error = "Username too long. (max. " XSTR(USRN_MAX) ")";
             is_valid = false;
         }
         else if (username_res == -2)
@@ -186,7 +179,10 @@ bool validate_form(FORM * form, bool is_login)
     int pw_res = is_valid_pw(pw->line->buffer, length);
     if (pw_res == 0)
     {
-        pw->error = "Password too short.";
+        if (is_login)
+            pw->error = "Incorrect password.";
+        else
+            pw->error = "Password too short. (min. " XSTR(PW_MIN) ")";
         is_valid = false;
     }
     else if (pw_res == -1)
@@ -247,8 +243,9 @@ static int is_valid_pw(char * pw, int length)
 // Check validity of a username
 static int is_valid_username(char * username, int length)
 {
-    if (strchr(username, ' ') != NULL)
-        return -2;
+    for (int i = 0; i < length; i++)
+        if (!isalpha(username[i]) && !isdigit(username[i]) && username[i] != '_')
+            return -2;
 
     // Invalid username if it is less than USRN_MIN
     if (length < USRN_MIN) return 0;
@@ -282,13 +279,19 @@ static char * encrypt_pw(char * pw, int length)
     return encrypted;
 }
 
-static USER * init_user_data(int username_len, int email_len, int pw_len)
+static void init_user_data(int username_len, int email_len, int pw_len)
 {
-    USER * user = (USER *)malloc(sizeof(USER));
+    user = (USER *)malloc(sizeof(USER));
 
     user->username = (char *)malloc(username_len * sizeof(char));
     user->email = (char *)malloc(email_len * sizeof(char));
     user->enc_pw = (char *)malloc(pw_len * sizeof(char));
+}
 
-    return user;
+void destroy_user(void)
+{
+    free(user->username);
+    free(user->email);
+    free(user->enc_pw);
+    free(user);
 }

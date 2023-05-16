@@ -13,7 +13,7 @@
 FORM * create_loginform(void);
 FORM * create_registrform(void);
 
-void get_user_input(void);
+static act_result get_user_input(void);
 int is_valid_char(wchar_t);
 
 static char * hide_str(int length);
@@ -26,25 +26,27 @@ static FORM * g_form;
 bool is_login; // A flag to check if the user is trying to login or register
 
 // Initiate the login interface
-void init_login(void)
+act_result init_login(void)
 {
     // Initialize and set default form
     refresh();
     g_form = create_loginform();
     is_login = true;
 
-    get_user_input();
+    act_result res = get_user_input();
 
     destroy_form(g_form);
+    return res;
 }
 
 // Get the user input and refresh the window accordingly
-void get_user_input(void)
+static act_result get_user_input(void)
 {
     wchar_t ch; // Character to scan
     short x = 1; // Position of the cursor relative to the field
     short i = 0; // Index of the selected field/button
     bool in_fields = true; // A flag to check if a field is selected
+    bool hide_pw = true;
     const short max_size = g_form->fields[i]->cols - 3; // Max size of the string to print
 
     // Show the cursor if hidden, then move it to the beginning of the first field
@@ -79,7 +81,10 @@ void get_user_input(void)
     // Keep scanning characters (and keys) from the user until a new line is encountered
     while (true)
     {
-        ch = wgetch(g_form->fields[i]->win);
+        if (in_fields)
+            ch = wgetch(g_form->fields[i]->win);
+        else
+            ch = wgetch(g_form->win);
 
         if (ch == '\n')
         {
@@ -106,11 +111,17 @@ void get_user_input(void)
 
                 continue;
             }
-            else if (result == ACT_RETURN) return;
+            else return result;
         }
 
-        FIELD * field = g_form->fields[i];
-        LINE * line = field->line;
+        FIELD * field;
+        LINE * line;
+
+        if (in_fields)
+        {
+            field = g_form->fields[i];
+            line = field->line;
+        }
         switch (ch)
         {
             case KEY_LEFT: // Left key
@@ -148,11 +159,14 @@ void get_user_input(void)
                     reset_b(i);
                     UP_CHECK(g_form->n_fields, true);
                 }
-                field = g_form->fields[i];
-                line = field->line;
-                x = ((line->length + 1) > max_size) ? (max_size + 1) : (line->length + 1);
-                line->curs_pos = line->length;
-                line->strstart = ((line->length + 1) > (max_size)) ? (line->length - max_size) : 0;
+                if (0 <= i && i < g_form->n_fields)
+                {
+                    field = g_form->fields[i];
+                    line = field->line;
+                    x = ((line->length + 1) > max_size) ? (max_size + 1) : (line->length + 1);
+                    line->curs_pos = line->length;
+                    line->strstart = ((line->length + 1) > (max_size)) ? (line->length - max_size) : 0;
+                }
                 break;
             case KEY_DOWN: case '\t': // Down key or Tab key
                 if (in_fields)
@@ -164,6 +178,18 @@ void get_user_input(void)
                     reset_b(i);
                     DOWN_CHECK(g_form->n_buttons, true);
                 }
+                if (0 <= i && i < g_form->n_fields)
+                {
+                    field = g_form->fields[i];
+                    line = field->line;
+                    x = ((line->length + 1) > max_size) ? (max_size + 1) : (line->length + 1);
+                    line->curs_pos = line->length;
+                    line->strstart = (line->length > (max_size + 1)) ? (line->length - max_size) : 0;
+                }
+                break;
+            case CTRL('x'):
+                hide_pw = !hide_pw;
+                i = g_form->n_fields - 1;
                 field = g_form->fields[i];
                 line = field->line;
                 x = ((line->length + 1) > max_size) ? (max_size + 1) : (line->length + 1);
@@ -186,7 +212,7 @@ void get_user_input(void)
         if (in_fields)
         {
             // Print the new string
-            if (field->hidden)
+            if (field->hidden && hide_pw)
                 mvwprintw(field->win, 1, 1, "%.*s", max_size, hide_str(line->length));
             else
                 mvwprintw(field->win, 1, 1, "%.*s", max_size, &line->buffer[line->strstart]);
@@ -213,7 +239,7 @@ static char * hide_str(int length)
 {
     char * hidden = (char *)malloc((length + 1) * sizeof(char));
 
-    for (int i = 0; i <= length; i++)
+    for (int i = 0; i < length; i++)
         hidden[i] = '*';
     hidden[length] = '\0';
 
@@ -244,7 +270,7 @@ act_result submit(void)
         return ACT_CONTINUE;
     }
 
-    return ACT_RETURN;
+    return ACT_SUBMIT;
 }
 
 // Switch from between login and registration forms
@@ -272,13 +298,18 @@ FORM * create_loginform(void)
     // Init form
     FORM * form = new_form(form_height, form_width, starty, startx, 1, COLOR_PAIR(CYAN));
 
+    mvprintw(starty + form_height + 1, startx + 1, "ARROWS: Navigate");
+    mvprintw(starty + form_height + 2, startx + 1, "ENTER: Select/Confirm");
+    mvprintw(starty + form_height + 2, startx + 1, "CTRL + X: Hide/Show password");
+    refresh();
+
     mvwprintw(form->win, title_ypos, (form->cols - 5) / 2, "Login");
 
     // Allocate memory for two text fields
     form->n_fields = 2;
     init_fields(&form->fields, form->n_fields);
     // Allocate memory for two buttons
-    form->n_buttons = 2;
+    form->n_buttons = 3;
     init_buttons(&form->buttons, form->n_buttons);
 
     short field_width = form_width - 12;
@@ -312,6 +343,15 @@ FORM * create_loginform(void)
     add_button(form->win, form->buttons[1], "Register", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
     form->buttons[1]->action = &switch_forms;
 
+    box = (dim_box){
+        .height = 3,
+        .width = 5,
+        .xpos = form_width - 2 - 5,
+        .ypos = 1
+    };
+    add_button(form->win, form->buttons[2], "x", box, COLOR_PAIR(RED_BG_WHITE), 0);
+    form->buttons[2]->action = &__quit__;
+
     wrefresh(form->win);
 
     return form;
@@ -329,13 +369,18 @@ FORM * create_registrform(void)
     // Init form
     FORM * form = new_form(form_height, form_width, starty, startx, 1, COLOR_PAIR(CYAN));
 
+    mvprintw(starty + form_height + 1, startx + 1, "ARROWS: Navigate");
+    mvprintw(starty + form_height + 2, startx + 1, "ENTER: Select/Confirm");
+    mvprintw(starty + form_height + 2, startx + 1, "CTRL + X: Hide/Show password");
+    refresh();
+
     mvwprintw(form->win, title_ypos, (form->cols - 8) / 2, "Register");
 
     // Allocate memory for three text fields
     form->n_fields = 3;
     init_fields(&form->fields, form->n_fields);
     // Allocate memory for two buttons
-    form->n_buttons = 2;
+    form->n_buttons = 3;
     init_buttons(&form->buttons, form->n_buttons);
 
     short field_width = form_width - 12;
@@ -371,6 +416,15 @@ FORM * create_registrform(void)
     box.ypos += 4;
     add_button(form->win, form->buttons[1], "Login", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
     form->buttons[1]->action = &switch_forms;
+
+    box = (dim_box){
+        .height = 3,
+        .width = 5,
+        .xpos = form_width - 2 - 5,
+        .ypos = 1
+    };
+    add_button(form->win, form->buttons[2], "x", box, COLOR_PAIR(RED_BG_WHITE), 0);
+    form->buttons[2]->action = &__quit__;
 
     wrefresh(form->win);
 

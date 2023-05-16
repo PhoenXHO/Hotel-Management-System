@@ -3,23 +3,31 @@
 #include "sidebar.h"
 #include "globals.h"
 
-#include "example.h"
+#include "loginhandler.h"
+#include "login.h"
 #include "calendar.h"
 #include "todo.h"
 #include "notepad.h"
 
 #define first_button_ypos 8
 
+SIDEBAR * sidebar;
+
 short mainwin_width;
 short mainwin_height;
+
+act_result logout(void);
 
 // Initialize main page
 void init_main_page(void)
 {
+    todo_called = false;
+    notepad_called = false;
+
     // Temporary info holder
     dim_box box = {0};
     // Initialize sidebar
-    SIDEBAR * sidebar = create_sidebar(5, COLOR_PAIR(CYAN));
+    sidebar = create_sidebar(4, COLOR_PAIR(CYAN));
 
     // Button 1
     box = (dim_box){
@@ -28,19 +36,16 @@ void init_main_page(void)
         .xpos = 0,
         .ypos = first_button_ypos
     };
-    add_app(sidebar, box, "App 1", 0, title);
+    add_app(sidebar, box, "To-do List", 0, todo, true);
     // Button 2
     box.ypos += 4;
-    add_app(sidebar, box, "To-do List", 1, todo);
+    add_app(sidebar, box, "Calendar", 1, standalone_calendar, true);
     // Button 3
     box.ypos += 4;
-    add_app(sidebar, box, "Calendar", 2, calendar);
-    // Button 4
-    box.ypos += 4;
-    add_app(sidebar, box, "Notepad", 3, notepad);
-    // Preferences button
+    add_app(sidebar, box, "Notepad", 2, notepad, true);
+    // Log out button
     box.ypos = LINES - 6;
-    add_app(sidebar, box, "Preferences", 4, NULL);
+    add_app(sidebar, box, "Log out", 3, logout, false);
 
     // Create the main window
     mainwin_height = LINES;
@@ -49,4 +54,16 @@ void init_main_page(void)
     wrefresh(mainwin);
 
     handle_sidebar(sidebar);
+}
+
+act_result logout(void)
+{
+    destroy_user();
+    destroy_win(mainwin);
+    mainwin = NULL;
+    destroy_sidebar();
+    destroy_todolist();
+    destroy_notelist();
+
+    return ACT_RETURN;
 }

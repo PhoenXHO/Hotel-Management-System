@@ -12,6 +12,7 @@
 #define RED_BG_WHITE    8
 #define CYAN_BG_WHITE   9
 #define CYAN_BG_BLACK   10
-#define RED_BG_BLUE     11
+#define GREEN_BG_BLACK  11
+#define RED_BG_BLUE     12
 
 #endif // COLORS_H_INCLUDED

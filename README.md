@@ -5,6 +5,6 @@ A basic starting point for our C mini project.
 - [x] Login Page
   - [x] Email verification
   - [x] Password encryption and security
-- [ ] Tasks and to-do lists
+- [x] Tasks and to-do lists
 - [x] Calendar
 - [ ] Notepad

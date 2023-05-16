@@ -1,6 +1,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "utils.h"
+#include "globals.h"
 
 // Clamp a number to a given range
 double clamp(double x, double _min, double _max)
@@ -70,9 +71,28 @@ void ref_mvwaddch(WINDOW * win, int starty, int startx, wchar_t ch)
 void * reallocate(void * arr, size_t new_cap)
 {
     void * new_arr = realloc(arr, new_cap);
-    if (!new_arr) exit(1);
+    if (!new_arr && new_cap != 0) exit(1);
 
     return new_arr;
+}
+
+// Initialize a field
+FIELD * create_newfield(void)
+{
+    FIELD * field = (FIELD *)malloc(sizeof(FIELD));
+    field->line = create_newline();
+    field->error = "";
+
+    return field;
+}
+
+// Deallocate memory used by a field
+void destroy_field(FIELD * field)
+{
+    destroy_win(field->win);
+    free(field->line->buffer);
+    free(field->line);
+    free(field);
 }
 
 // Initialize fields
@@ -80,11 +100,7 @@ void init_fields(FIELD *** fields, int n_fields)
 {
     *fields = (FIELD **)malloc(n_fields * sizeof(FIELD *));
     for (int i = 0; i < n_fields; i++)
-    {
-        (*fields)[i] = (FIELD *)malloc(sizeof(FIELD));
-        (*fields)[i]->line = create_newline();
-        (*fields)[i]->error = "";
-    }
+        (*fields)[i] = create_newfield();
 }
 
 // Initialize lines
@@ -100,13 +116,18 @@ LINE * create_newline(void)
 {
     LINE * line = (LINE *)malloc(sizeof(LINE));
     line->capacity = INITIAL_CAP;
-    line->length = 0;
     line->buffer = (char *)malloc(line->capacity * sizeof(char));
     line->buffer[0] = '\0';
-    line->curs_pos = 0;
-    line->strstart = 0;
+    line->curs_pos = line->length = line->strstart = 0;
 
     return line;
+}
+
+// Deallocate memory used by a line
+void destroy_line(LINE * line)
+{
+    free(line->buffer);
+    free(line);
 }
 
 // Initialize buttons
@@ -161,20 +182,39 @@ void add_field(WINDOW * win, FIELD * field, const char * label, dim_box box, boo
     wrefresh(field->win);
 }
 
-// Add button to the window
-void add_button(WINDOW * win, BUTTON * button, const char * content, dim_box box, chtype style, chtype highlight)
+// Create and initialize a button
+void create_newbutton(BUTTON * button, char * content, dim_box box, chtype style, chtype highlight)
 {
     button->rows = box.height;
 
     int len = strlen(content);
     button->cols = len > box.width ? len : box.width;
 
-    button->xpos = (box.xpos >= 0) ? box.xpos : (win->_maxx - button->cols) / 2;
-    button->ypos = (box.ypos >= 0) ? box.ypos : (win->_maxy - button->rows) / 2;
+    button->xpos = box.xpos;
+    button->ypos = box.ypos;
 
-    button->content = content;
+    button->content = (char *)malloc((len + 1) * sizeof(char));
+    strncpy(button->content, content, len);
+    button->content[len] = '\0';
+
     button->style = style == 0 ? A_BLINK : style;
     button->highlight = highlight == 0 ? A_STANDOUT : highlight;
+}
+
+// Deallocate memory used by a button
+void destroy_button(BUTTON * button)
+{
+    free(button->content);
+    free(button);
+}
+
+// Add button to the window
+void add_button(WINDOW * win, BUTTON * button, char * content, dim_box box, chtype style, chtype highlight)
+{
+    create_newbutton(button, content, box, style, highlight);
+
+    button->xpos = (box.xpos >= 0) ? box.xpos : (win->_maxx - button->cols) / 2;
+    button->ypos = (box.ypos >= 0) ? box.ypos : (win->_maxy - button->rows) / 2;
 
     wattron(win, button->style);
     printb(button, win);
@@ -182,7 +222,7 @@ void add_button(WINDOW * win, BUTTON * button, const char * content, dim_box box
 }
 
 // Change button style
-void change_button_style(BUTTON ** buttons, WINDOW * win, short n_buttons, short index, chtype style)
+void change_button_style(BUTTON ** buttons, WINDOW * win, short n_buttons, int index, chtype style)
 {
     for (int i = 0; i < n_buttons; i++)
         if (i == index)
@@ -242,6 +282,18 @@ void handle_line(WINDOW * win, LINE * line, wchar_t ch, short * curs_pos, short 
             (*strstart)--;
             // Remove last (duplicate) character from the window
             mvwaddch(win, 1, max_size, ' ');
+        }
+        else if ((*strstart) > 0 && (*curs_pos) > 2)
+        {
+            // Move the cursor back one character
+            (*curs_pos)--;
+            // Remove last (duplicate) character from the window
+            mvwaddch(win, line_pos, line->length - (*strstart), ' ');
+        }
+        else if ((*strstart) > 0)
+        {
+            // Move the whole string to the right
+            (*strstart)--;
         }
         else
         {
@@ -319,4 +371,107 @@ void free_arr(void ** arr, int n_elem)
     for (int i = 0; i < n_elem; i++)
         free(arr[i]);
     free(arr);
+}
+
+void reset_mainwin(void)
+{
+    werase(mainwin);
+    wattron(mainwin, COLOR_PAIR(CYAN));
+    box(mainwin, 0, 0);
+    wattroff(mainwin, COLOR_PAIR(CYAN));
+    curs_set(0);
+    wrefresh(mainwin);
+}
+
+act_result __quit__(void) { return ACT_RETURN; }
+act_result __continue__(void) { return ACT_CONTINUE; }
+
+char * create_newdir(const char * name, const char * ext)
+{
+    int dir_len = strlen(user->username) + db_dir_len;
+    int len = strlen(name) + dir_len + strlen(ext) + 1;
+    char * dir = (char *)malloc(len * sizeof(char));
+
+    strcpy(dir, db_dir);
+    strcat(dir, user->username);
+
+    dir[dir_len] = '/';
+    dir[dir_len + 1] = '\0';
+
+    strcat(dir, name);
+    strcat(dir, ext);
+
+    return dir;
+}
+
+bool is_valid_filename(char * name, int length)
+{
+    for (int i = 0; i < length; i++)
+        if (!isalpha(name[i]) && !isdigit(name[i]) && name[i] != '_')
+            return false;
+    return true;
+}
+
+char * dfscans(FILE * file)
+{
+    if (!file)
+        return NULL;
+
+    char * string = (char *)malloc(sizeof(char));
+
+    int len = 0;
+
+    char ch;
+    while ((ch = fgetc(file)) != EOF && ch != '\n' && ch != '\0')
+    {
+        string = GROW_ARRAY(char, string, ++len + 1);
+
+        string[len - 1] = ch;
+    }
+    string[len] = '\0';
+
+    return string;
+}
+
+void fassert(FILE * file, char * file_dir)
+{
+    if (!file)
+    {
+        fprintf(stderr, "error: could not open file '%s'.\n", file_dir);
+        exit(EXIT_FAILURE);
+    }
+}
+
+char * strsep(char ** stringp, const char * delim)
+{
+    char * rv = *stringp;
+    if (rv)
+    {
+        *stringp += strcspn(*stringp, delim);
+        if (**stringp)
+            *(*stringp)++ = '\0';
+        else
+            *stringp = 0;
+    }
+
+    return rv;
+}
+
+void append_offset(char * str, char * source, int offset, int str_length, int source_length)
+{
+    for (int i = str_length; i < str_length + offset; i++)
+        str[i] = ' ';
+
+    for (int i = str_length + offset; i < str_length + offset + source_length; i++)
+        str[i] = source[i - (str_length + offset)];
+
+    str[str_length + offset + source_length] = '\0';
+}
+
+void append_spaces(char * str, int n_spaces, int length)
+{
+    for (int i = length; i < length + n_spaces; i++)
+        str[i] = ' ';
+
+    str[length + n_spaces] = '\0';
 }
