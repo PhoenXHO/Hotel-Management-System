@@ -13,11 +13,14 @@ typedef struct
     char * username;
     char * email;
     char * enc_pw;
+    bool new_account;
 } USER;
 
 bool validate_form(FORM *, bool is_login);
 
 bool login_user(FORM *);
 bool register_user(FORM *);
+
+void destroy_user(void);
 
 #endif // LOGINHANDLER_H_INCLUDED

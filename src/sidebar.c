@@ -22,10 +22,18 @@ SIDEBAR * create_sidebar(short n_buttons, chtype colors)
 
     // Print title
     mvwprintw(sidebar->win, 2, 8, "Welcome,");
-    //mvwprintw(sidebar->win, 3, 18, "%s!", user->username);
+    mvwprintw(sidebar->win, 2, 18, "%s!", user->username);
     wrefresh(sidebar->win);
 
     return sidebar;
+}
+
+// Deallocate memory used by the sidebar
+void destroy_sidebar(void)
+{
+    destroy_win(sidebar->win);
+    free_arr((void **)sidebar->buttons, sidebar->n_buttons);
+    free(sidebar);
 }
 
 // Handle sidebar
@@ -48,17 +56,12 @@ void handle_sidebar(SIDEBAR * sidebar)
         ch = wgetch(sidebar->win);
 
         reset_b(i);
-
         switch (ch)
         {
             case '\n':
-                sidebar->buttons[i]->action();
-                werase(mainwin);
-                wattron(mainwin, COLOR_PAIR(CYAN));
-                box(mainwin, 0, 0);
-                wattroff(mainwin, COLOR_PAIR(CYAN));
-                curs_set(0);
-                wrefresh(mainwin);
+                ((d_event)sidebar->buttons[i]->action)();
+                if (mainwin) reset_mainwin();
+                else return;
                 break;
             case KEY_DOWN:
                 if (i < sidebar->n_buttons - 1)
@@ -72,10 +75,8 @@ void handle_sidebar(SIDEBAR * sidebar)
                 else
                     i = sidebar->n_buttons - 1;
                 break;
-            case '`': return;
             default: break;
         }
-
         highlight_b(i);
     }
 
@@ -103,8 +104,13 @@ static SIDEBAR * new_sidebar(chtype colors)
 }
 
 // Link an app to a sidebar
-void add_app(SIDEBAR * sidebar, dim_box box, const char * title, short index, event action)
+void add_app(SIDEBAR * sidebar, dim_box box, char * title, short index, event action, bool primary)
 {
-    add_button(sidebar->win, sidebar->buttons[index], title, box, COLOR_PAIR(WHITE_BG_BLACK), COLOR_PAIR(CYAN_BG_BLACK));
+    add_button(sidebar->win,
+               sidebar->buttons[index],
+               title,
+               box,
+               COLOR_PAIR(WHITE_BG_BLACK),
+               primary ? COLOR_PAIR(CYAN_BG_BLACK) : COLOR_PAIR(RED_BG_WHITE));
     sidebar->buttons[index]->action = action;
 }

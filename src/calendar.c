@@ -1,4 +1,5 @@
 #include <string.h>
+#include <time.h>
 
 #include "calendar.h"
 #include "globals.h"
@@ -49,13 +50,29 @@ static short get_number_of_days(short month, short year);
 static short get_day_number(short day, short month, short year);
 static bool is_leap_year(short year);
 
-act_result calendar(void)
+DATE get_from_calendar(void)
+{
+    return calendar(true);
+}
+
+act_result standalone_calendar(void)
+{
+    calendar(false);
+
+    return ACT_RETURN;
+}
+
+DATE calendar(bool selecting)
 {
     CALENDAR * calendar = create_newcalendar();
     BUTTON ** buttons = calendar->buttons;
 
-    date.month = 4;
-    date.year = 2017;
+    time_t c_t = time(NULL);
+    struct tm tm = *localtime(&c_t);
+
+    date.day = tm.tm_mday;
+    date.month = tm.tm_mon + 1;
+    date.year = tm.tm_year + 1900;
 
     dim_box box = (dim_box){
         .height = 3,
@@ -80,15 +97,22 @@ act_result calendar(void)
     mvwprintw(mainwin, DAYS_YPOS, box.xpos, "SAT");
     wrefresh(mainwin);
 
+    mvwprintw(mainwin, mainwin_height - 6, 2, "ARROW KEYS: Navigate");
+    mvwprintw(mainwin, mainwin_height - 5, 2, "ENTER KEY: Select");
+    mvwprintw(mainwin, mainwin_height - 4, 2, "CTRL + Q: Quit/Cancel");
+
+    if (selecting)
+        mvwprintw(mainwin, mainwin_height - 3, 2, "- Select a specific day to add a task.");
+
     WINDOW * dayswin = calendar->dayswin = create_newwin(DAYS_WIN_HEIGHT, DAYS_WIN_WIDTH, DAYS_YPOS + 2, sidebar_width + DAYS_YPOS, -1, 0);
 
     short n_days = get_number_of_days(date.month, date.year);
     short first_day = get_day_number(1, date.month, date.year);
 
     wchar_t c;
-    WINDOW * tmp_win = mainwin;
-    bool in_mainwin = true;
-    int b_i = MONTH_PREV;
+    WINDOW * tmp_win = dayswin;
+    bool in_mainwin = false;
+    int b_i = date.day - 1;
 
     #define highlight_b(i) \
         change_button_style(buttons, tmp_win, calendar->n_buttons, i, buttons[i]->highlight)
@@ -96,10 +120,6 @@ act_result calendar(void)
         change_button_style(buttons, tmp_win, calendar->n_buttons, i, buttons[i]->style)
 
     refresh_calendar(calendar, n_days, first_day);
-
-    mvwprintw(mainwin, mainwin_height - 6, 2, "ARROW KEYS: Navigate");
-    mvwprintw(mainwin, mainwin_height - 5, 2, "ENTER KEY: Select");
-    mvwprintw(mainwin, mainwin_height - 4, 2, "Select a specific day to add/view a task.");
 
     highlight_b(b_i);
 
@@ -217,10 +237,31 @@ act_result calendar(void)
                     first_day = get_day_number(1, date.month, date.year);
                     refresh_calendar(calendar, n_days, first_day);
                 }
+                else
+                {
+                    date.day = b_i + 1;
+                    if (selecting)
+                    {
+                        destroy_calendar(calendar);
+                        reset_mainwin();
+                        return date;
+                    }
+                }
                 break;
             case CTRL('q'):
                 destroy_calendar(calendar);
-                return ACT_RETURN;
+                reset_mainwin();
+                date.day = -1;
+                return date;
+
+            // Ignore the following keys
+            case KEY_IC: // Insert key
+            case KEY_DC: // Delete key
+            case KEY_HOME: // Home key
+            case KEY_END: // End key
+            case KEY_NPAGE: // Page down key
+            case KEY_PPAGE: // Page up key
+                break;
 
             default: break;
         }
@@ -232,7 +273,7 @@ act_result calendar(void)
     #undef highlight_b
     #undef reset_b
 
-    return ACT_RETURN;
+    return date;
 }
 
 CALENDAR * create_newcalendar(void)
@@ -264,22 +305,22 @@ static void refresh_calendar(CALENDAR * calendar, short n_days, short first_day)
         .ypos = 1
     };
 
-    add_button(mainwin, buttons[MONTH_PREV], "<", box, COLOR_PAIR(BLUE_BG_WHITE), 0);
+    add_button(mainwin, buttons[MONTH_PREV], "<", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
 
     wclear_from(mainwin, box.ypos + 1, box.xpos + 3, MONTH_TXT_WIDTH);
     const char * month = month_name[date.month - 1];
     mvwprintw(mainwin, 2, box.xpos + 3 + (MONTH_TXT_WIDTH - strlen(month)) / 2, "%s", month);
 
     box.xpos += MONTH_TXT_WIDTH + 3;
-    add_button(mainwin, buttons[MONTH_NEXT], ">", box, COLOR_PAIR(BLUE_BG_WHITE), 0);
+    add_button(mainwin, buttons[MONTH_NEXT], ">", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
 
     box.xpos += WHITESPACE + 3;
-    add_button(mainwin, buttons[YEAR_PREV], "<", box, COLOR_PAIR(BLUE_BG_WHITE), 0);
+    add_button(mainwin, buttons[YEAR_PREV], "<", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
 
     mvwprintw(mainwin, 2, box.xpos + 3 + (YEAR_TXT_WIDTH - 4) / 2, "%d", date.year);
 
     box.xpos += YEAR_TXT_WIDTH + 3;
-    add_button(mainwin, buttons[YEAR_NEXT], ">", box, COLOR_PAIR(BLUE_BG_WHITE), 0);
+    add_button(mainwin, buttons[YEAR_NEXT], ">", box, COLOR_PAIR(CYAN_BG_BLACK), 0);
 
     werase(dayswin);
 
