@@ -7,4 +7,4 @@ A basic starting point for our C mini project.
   - [x] Password encryption and security
 - [x] Tasks and to-do lists
 - [x] Calendar
-- [ ] Notepad
+- [x] Notepad
