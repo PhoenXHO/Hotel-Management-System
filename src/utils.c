@@ -158,8 +158,6 @@ void printb(BUTTON * button, WINDOW * win)
             }
             else
                 mvwaddch(win, ypos + i, xpos + j, ' ');
-
-            wrefresh(win);
         }
     }
 
@@ -231,7 +229,6 @@ void change_button_style(BUTTON ** buttons, WINDOW * win, short n_buttons, int i
             printb(buttons[i], win);
             wattroff(win, style);
         }
-
     wrefresh(win);
 }
 
@@ -329,8 +326,8 @@ void wclear_from(WINDOW * win, short ypos, short xpos, short length)
     {
         wmove(win, ypos, xpos);
         wprintw(win, " ");
-        wrefresh(win);
     }
+    wrefresh(win);
 }
 
 // Scan a string dynamically from a stream up to a tab character

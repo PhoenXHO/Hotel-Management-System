@@ -220,7 +220,7 @@ static bool is_valid_email(char * email, int length)
             continue;
         }
 
-        if (!isalpha(c) && !isdigit(c))
+        if (!isalpha(c) && !isdigit(c) && c != '_')
             return false;
     }
 

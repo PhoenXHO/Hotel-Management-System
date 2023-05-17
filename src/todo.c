@@ -244,6 +244,11 @@ static act_result display_task(int index, bool editable)
     short max_size = MAX_SIZE + 1;
     bool in_field = true;
     bool quit = false;
+    DATE tmp = {
+        .day = task->date.day,
+        .month = task->date.month,
+        .year = task->date.year
+    };
 
     wchar_t ch;
     LINE * line = (LINE *)calloc(1, sizeof(LINE));
@@ -389,6 +394,15 @@ jump:
     destroy_button(date_button);
     destroy_field(text_field);
     destroy_win(prompt);
+
+    if (editable && quit)
+    {
+        task->date = (DATE){
+            .day = tmp.day,
+            .month = tmp.month,
+            .year = tmp.year
+        };
+    }
 
     if (editable && !quit)
     {
