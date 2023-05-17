@@ -1,6 +1,8 @@
 #include <string.h>
 #include <math.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <time.h>
 #include "notepad.h"
 #include "globals.h"
 #include "menu.h"
@@ -362,8 +364,9 @@ static act_result delete_note(int index)
     {
         note_list->n_notes--;
 
-        char * tmp_dir = create_newdir(note_list->notes[index]->buffer, note_ext);//FREE
+        char * tmp_dir = create_newdir(note_list->notes[index]->buffer, note_ext);
         remove(tmp_dir);
+        free(tmp_dir);
 
         destroy_line(note_list->notes[index]);
         if (index < note_list->n_notes)
@@ -420,8 +423,21 @@ static void update_notes(BUTTON *** buttons, event e, chtype highlight, int * n_
     {
         LINE * fname = note_list->notes[i];
 
+        char * tmp_dir = create_newdir(fname->buffer, note_ext);
+
+        struct stat filestat;
+        stat(tmp_dir, &filestat);
+        struct tm tminfo = *localtime(&filestat.st_mtime);
+        free(tmp_dir);
+
+        DATE date = {
+            .day = tminfo.tm_mday,
+            .month = tminfo.tm_mon + 1,
+            .year = tminfo.tm_year + 1900
+        };
+
         char * tmp = (char *)malloc((notes_width + 1) * sizeof(char));
-        sprintf(tmp, "%6d %5.2d/%.2d/%.4d", i + 1, 0, 0, 0);
+        sprintf(tmp, "%6d %5.2d/%.2d/%.4d", i + 1, date.day, date.month, date.year);
         short curr_len = 5 + 1 + 4 + 10;
 
         #define OFFSET  4

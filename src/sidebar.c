@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <string.h>
 #include "sidebar.h"
 #include "globals.h"
 
@@ -21,8 +22,7 @@ SIDEBAR * create_sidebar(short n_buttons, chtype colors)
     init_buttons(&sidebar->buttons, sidebar->n_buttons);
 
     // Print title
-    mvwprintw(sidebar->win, 2, 8, "Welcome,");
-    mvwprintw(sidebar->win, 2, 18, "%s!", user->username);
+    mvwprintw(sidebar->win, 2, (sidebar_width - (10 + strlen(user->username))) / 2, "Welcome, %s!", user->username);
     wrefresh(sidebar->win);
 
     return sidebar;

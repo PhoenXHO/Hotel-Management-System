@@ -15,6 +15,10 @@ MENU * create_newmenu(dim_box box, int n_buttons)
 
     menu->win = create_newwin(box.height, box.width, box.ypos, box.xpos, 1, COLOR_PAIR(CYAN));
 
+    mvwprintw(mainwin, box.ypos + box.height + 1, box.xpos - sidebar_width + 2, "UP/DOWN ARROWS: Navigate");
+    mvwprintw(mainwin, box.ypos + box.height + 2, box.xpos - sidebar_width + 2, "ENTER: Select");
+    wrefresh(mainwin);
+
     return menu;
 }
 

@@ -55,10 +55,6 @@ int main()
 
         if (res == ACT_RETURN) break;
 
-    //    user = (USER *)malloc(sizeof(USER));
-    //    user->username = "Test";
-    //    user->new_account = false;
-
         user_dir = (char *)malloc(sizeof(char) * (strlen(db_dir) + strlen(user->username) + 2));
         strcpy(user_dir, db_dir);
         strcat(user_dir, user->username);
